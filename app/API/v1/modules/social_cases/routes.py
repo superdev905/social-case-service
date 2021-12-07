@@ -19,7 +19,7 @@ from .model import SocialCase
 from .schema import SocialCaseCreate, SocialCaseItem
 
 router = APIRouter(prefix="/social-cases",
-                   tags=["Etapas del proceso"],
+                   tags=["Casos sociales"],
                    dependencies=[Depends(JWTBearer())])
 
 
