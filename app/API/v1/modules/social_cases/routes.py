@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional
+from typing import List, Optional
 from fastapi import status, Request, APIRouter
 from fastapi.encoders import jsonable_encoder
 from fastapi.param_functions import Depends, Query
@@ -16,7 +16,7 @@ from ...helpers.crud import get_updated_obj
 from ...helpers.humanize_date import get_time_ago
 from ...helpers.schema import SuccessResponse
 from .model import SocialCase
-from .schema import SocialCaseCreate, SocialCaseItem
+from .schema import SocialCaseCreate, SocialCaseItem, SocialCaseSimple
 
 router = APIRouter(prefix="/social-cases",
                    tags=["Casos sociales"],
@@ -54,6 +54,11 @@ def get_all(business_id: int = Query(None, alias="businessId"),
         filters.append(SocialCase.state.like(state))
 
     return paginate(db.query(SocialCase).filter(or_(*filters)).order_by(SocialCase.created_at), pag_params)
+
+
+@router.get("/collect", response_model=List[SocialCaseSimple])
+def get_all_simple(db: Session = Depends(get_database)):
+    return db.query(SocialCase).filter(SocialCase.is_active == True).order_by(SocialCase.created_at).all()
 
 
 @router.post("", response_model=SocialCaseItem)

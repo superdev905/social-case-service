@@ -46,3 +46,13 @@ class SocialCaseItem(SocialCaseBase):
     id: int
     is_active: bool = Field(alias="isActive")
     created_at: datetime = Field(alias="createdDate")
+
+
+class SocialCaseSimple(BaseModel):
+    id: int
+    date: datetime
+    employee_names: str = Field(alias="employeeNames")
+
+    class Config:
+        orm_mode = True
+        allow_population_by_field_name = True

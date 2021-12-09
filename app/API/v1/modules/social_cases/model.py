@@ -1,6 +1,8 @@
+from sqlalchemy.orm import relationship
 from sqlalchemy.sql.sqltypes import Boolean, DateTime
 from app.database.base_class import Base, TimestampMixin, AuthorMixin
 from sqlalchemy import Column, Integer, String
+from ..intervention_plans.model import InterventionPlan
 
 
 class SocialCase(Base, AuthorMixin, TimestampMixin):
@@ -20,3 +22,6 @@ class SocialCase(Base, AuthorMixin, TimestampMixin):
     delegation = Column(String(120), nullable=False)
     professional_id = Column(Integer, nullable=False)
     zone = Column(String(120))
+
+    intervention_plans = relationship(
+        "InterventionPlan", back_populates="social_case", lazy="select")
