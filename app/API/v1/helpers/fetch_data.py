@@ -13,19 +13,19 @@ def handle_response(result) -> object:
     raise HTTPException(status_code=400, detail="Error al obtener datos")
 
 
-def fetch_parameter_data(token, endpoint: str, id: int) -> object:
+def fetch_parameter_data(req: Request, endpoint: str, id: int) -> object:
     response = http.request(
         'GET', SERVICES["parameters"]+'/'+endpoint+'/'+str(id), headers={
-            "Authorization": "Bearer %s" % token
+            "Authorization": "Bearer %s" % req.token
         })
 
     return handle_response(response)
 
 
-def fetch_users_service(token: str, user_id: int) -> str:
+def fetch_users_service(req: Request, user_id: int) -> str:
     user_req = http.request(
         'GET', SERVICES["users"]+'/users/' + str(user_id), headers={
-            "Authorization": "Bearer %s" % token
+            "Authorization": "Bearer %s" % req.token
         })
     result = handle_response(user_req)
 

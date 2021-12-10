@@ -103,3 +103,11 @@ class BussinessResponse(BaseModel):
 
     class Config:
         allow_population_by_field_name = True
+
+
+class AreaResponse(BaseModel):
+    id: int
+    name: str
+
+    class Config:
+        allow_population_by_field_name = True

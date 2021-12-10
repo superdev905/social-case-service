@@ -25,6 +25,7 @@ router = APIRouter(prefix="/intervention-plans",
 
 @router.get("", response_model=Page[PlanItem])
 def get_all(social_case_id: int = Query(None, alias="socialCaseId"),
+            search: str = None,
             db: Session = Depends(get_database),
             pag_params: Params = Depends()):
     """
@@ -32,8 +33,17 @@ def get_all(social_case_id: int = Query(None, alias="socialCaseId"),
     ---
     """
     filters = []
+    search_filters = []
 
-    return paginate(db.query(InterventionPlan).filter(or_(*filters)).order_by(InterventionPlan.created_at), pag_params)
+    if social_case_id:
+        filters.append(InterventionPlan.social_case_id == social_case_id)
+    if search:
+        formatted_search = "{}%".format(search)
+        search_filters.append(
+            InterventionPlan.management_name.ilike(formatted_search))
+        search_filters.append(
+            InterventionPlan.professional_names.ilike(formatted_search))
+    return paginate(db.query(InterventionPlan).filter(and_(or_(*filters, *search_filters), InterventionPlan.is_active == True)).order_by(InterventionPlan.created_at), pag_params)
 
 
 @router.post("", response_model=PlanItem)
@@ -41,7 +51,7 @@ def create_case(req: Request,
                 body: PlanCreate,
                 db: Session = Depends(get_database)):
     """
-    Crea un nuevo plan de intervención
+    Crea una tarea del Plan de Intervención
     ---
     - **body**: body
     """
@@ -55,3 +65,55 @@ def create_case(req: Request,
     db.refresh(db_plan)
 
     return db_plan
+
+
+@router.put("/{id}", response_model=PlanItem)
+def update_task(id: int,
+                body: PlanCreate,
+                db: Session = Depends(get_database)):
+    """
+    Actualiza una tarea del Plan de intervención
+    ---
+    - **id**: Id de tarea
+    - **body**: body
+    """
+
+    found_plan = db.query(InterventionPlan).filter(
+        InterventionPlan.id == id).first()
+
+    if not found_plan:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="No existe una tarea con este id: %s".format(id))
+
+    updated_plan = get_updated_obj(found_plan, body)
+
+    db.add(updated_plan)
+    db.commit()
+    db.refresh(updated_plan)
+
+    return updated_plan
+
+
+@router.delete("/{id}", response_model=PlanItem)
+def delete_task(id: int,
+                db: Session = Depends(get_database)):
+    """
+    Elimina una tarea del Plan de Intervención
+    ---
+    - **id**: Id de tarea
+    """
+
+    found_plan = db.query(InterventionPlan).filter(
+        InterventionPlan.id == id).first()
+
+    if not found_plan:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="No existe una tarea con este id: %s".format(id))
+
+    found_plan.is_active = False
+
+    db.add(found_plan)
+    db.commit()
+    db.refresh(found_plan)
+
+    return found_plan

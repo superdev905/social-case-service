@@ -1,6 +1,7 @@
 from datetime import datetime
 from typing import Literal, Optional
 from pydantic import BaseModel, Field
+from ...helpers.schema import AreaResponse, BussinessResponse, EmployeeResponse, User
 
 
 class SocialCaseBase(BaseModel):
@@ -56,3 +57,10 @@ class SocialCaseSimple(BaseModel):
     class Config:
         orm_mode = True
         allow_population_by_field_name = True
+
+
+class SocialCaseDetails(SocialCaseItem):
+    business: BussinessResponse
+    employee: EmployeeResponse
+    area: AreaResponse
+    professional: User

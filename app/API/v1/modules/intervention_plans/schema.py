@@ -9,7 +9,7 @@ class PlanBase(BaseModel):
     management_id: int = Field(alias="managementId")
     management_name: str = Field(alias="managementName")
     professional_id: int = Field(alias="professionalId")
-    professional_names: int = Field(alias="professionalNames")
+    professional_names: str = Field(alias="professionalNames")
 
     class Config:
         orm_mode = True
