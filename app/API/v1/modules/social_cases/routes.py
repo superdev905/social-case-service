@@ -1,5 +1,7 @@
 from datetime import datetime
 from typing import List, Optional
+
+from sqlalchemy.sql import schema
 from fastapi import status, Request, APIRouter
 from fastapi.encoders import jsonable_encoder
 from fastapi.param_functions import Depends, Query
@@ -15,8 +17,9 @@ from ...helpers.fetch_data import fetch_parameter_data, fetch_users_service, get
 from ...helpers.crud import get_updated_obj
 from ...helpers.humanize_date import get_time_ago
 from ...helpers.schema import SuccessResponse
-from .model import SocialCase
-from .schema import SocialCaseCreate, SocialCaseDetails, SocialCaseItem, SocialCaseSimple
+from .model import SocialCase, SocialCaseDerivation
+from .schema import DerivationCreate, DerivationItem, SocialCaseCreate, SocialCaseDetails, SocialCaseItem, SocialCaseSimple
+from .services import create_professionals
 
 router = APIRouter(prefix="/social-cases",
                    tags=["Casos sociales"],
@@ -109,3 +112,71 @@ def get_one(req: Request,
             "employee": employee,
             "area": area,
             "professional": professional}
+
+
+@router.post("/{id}/derivation", response_model=DerivationItem)
+def create_derivation(req: Request,
+                      id: int,
+                      body: DerivationCreate,
+                      db: Session = Depends(get_database)):
+    """
+    Crea una derivación para un casos social
+    ---
+    - **id**: id
+    """
+    social_case = db.query(SocialCase).filter(
+        SocialCase.id == id).first()
+
+    if not social_case:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="No existe una tarea con este id: %s".format(id))
+
+    user_id = req.user_id
+    professionals = body.assigned_professionals
+    new_derivation = jsonable_encoder(body, by_alias=False)
+
+    del new_derivation["assigned_professionals"]
+    new_derivation["created_by"] = user_id
+
+    db_derivation = SocialCaseDerivation(**new_derivation)
+
+    db.add(db_derivation)
+    db.commit()
+    db.refresh(db_derivation)
+
+    create_professionals(db, professionals, db_derivation.id,  user_id)
+
+    social_case.derivation_id = db_derivation.id
+
+    db.add(social_case)
+    db.commit()
+    db.refresh(social_case)
+
+    return db_derivation
+
+
+@router.get("/{id}/derivation/{derivation_id}", response_model=DerivationItem)
+def get_derivation(req: Request,
+                   id: int,
+                   derivation_id: int,
+                   db: Session = Depends(get_database)):
+    """
+    Retorna detalles de la derivación de un casos social
+    ---
+    - **id**: id
+    """
+    social_case = db.query(SocialCase).filter(
+        SocialCase.id == id).first()
+
+    if not social_case:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="No existe un caso social con este id: %s" % format(id))
+
+    derivation = db.query(SocialCaseDerivation).filter(
+        SocialCaseDerivation.id == derivation_id).first()
+
+    if not derivation:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="No existe una derivación con este id: %s" % format(derivation_id))
+
+    return derivation

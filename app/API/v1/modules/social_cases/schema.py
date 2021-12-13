@@ -1,7 +1,43 @@
 from datetime import datetime
-from typing import Literal, Optional
+from typing import List, Literal, Optional
 from pydantic import BaseModel, Field
 from ...helpers.schema import AreaResponse, BussinessResponse, EmployeeResponse, User
+
+
+class AssignedProfessional(BaseModel):
+    user_id: int = Field(alias="userId")
+    fullname: str = Field(alias="fullName")
+
+    class Config:
+        orm_mode = True
+        allow_population_by_field_name = True
+
+
+class AssignedProfessionalItem(AssignedProfessional):
+    id: int
+
+
+class DerivationBase(BaseModel):
+    date: datetime
+    assistance_titular_id: int = Field(alias="assistanceTitularId")
+    observations: str
+    state: str
+    priority: str
+    assigned_professionals: List[AssignedProfessional] = Field(
+        alias="professionals")
+
+    class Config:
+        orm_mode = True
+        allow_population_by_field_name = True
+
+
+class DerivationCreate(DerivationBase):
+    pass
+
+
+class DerivationItem(DerivationBase):
+    assigned_professionals: Optional[List[AssignedProfessionalItem]] = Field(
+        alias="professionals")
 
 
 class SocialCaseBase(BaseModel):
@@ -47,6 +83,7 @@ class SocialCaseItem(SocialCaseBase):
     id: int
     is_active: bool = Field(alias="isActive")
     created_at: datetime = Field(alias="createdDate")
+    derivation_id: Optional[int] = Field(alias="derivationId")
 
 
 class SocialCaseSimple(BaseModel):

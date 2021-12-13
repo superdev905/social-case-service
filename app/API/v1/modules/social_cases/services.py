@@ -1,25 +1,18 @@
+from typing import List
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm.session import Session
-from .model import EmployeePhase
-
-DEFAULT_PHASES = [{"name": "AHORRO", "level": 1},
-                  {"name": "POSTULACIÓN", "level": 2},
-                  {"name": "OBTENCIÓN SUBSIDIO", "level": 3},
-                  {"name": "BUSQUEDA VIVIENDA", "level": 4},
-                  {"name": "CRÉDITO", "level": 5},
-                  {"name": "ESCRITURACIÓN", "level": 6},
-                  {"name": "PROPIETARIO", "level": 7}]
+from .schema import AssignedProfessional as ProfessionalSchema
+from .model import AssignedProfessional
 
 
-def create_phases(db: Session, employee_id: int, user_id: int):
-    for phase in DEFAULT_PHASES:
-        employee_phase = jsonable_encoder(phase)
-        employee_phase["created_by"] = user_id
-        employee_phase["employee_id"] = employee_id
-        employee_phase["is_locked"] = False if phase["name"] == "AHORRO" else True
+def create_professionals(db: Session, list: List[ProfessionalSchema], derivation_id: int, user_id: int):
+    for i in list:
+        new_item = jsonable_encoder(i, by_alias=False)
+        new_item["derivation_id"] = derivation_id
+        new_item["created_by"] = user_id
 
-        db_phase = EmployeePhase(**employee_phase)
+        db_item = AssignedProfessional(**new_item)
 
-        db.add(db_phase)
+        db.add(db_item)
         db.commit()
-        db.refresh(db_phase)
+        db.refresh(db_item)

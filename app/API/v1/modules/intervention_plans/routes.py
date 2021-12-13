@@ -67,6 +67,26 @@ def create_case(req: Request,
     return db_plan
 
 
+@router.get("/{id}", response_model=PlanItem)
+def get_one(id: int,
+            db: Session = Depends(get_database)):
+    """
+    Retorna los detalles de una tarea del Plan de intervención
+    ---
+    - **id**: Id de tarea
+    - **body**: body
+    """
+
+    found_plan = db.query(InterventionPlan).filter(
+        InterventionPlan.id == id).first()
+
+    if not found_plan:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="No existe una tarea con este id: %s".format(id))
+
+    return found_plan
+
+
 @router.put("/{id}", response_model=PlanItem)
 def update_task(id: int,
                 body: PlanCreate,
