@@ -24,11 +24,13 @@ class SocialCase(Base, AuthorMixin, TimestampMixin):
     professional_id = Column(Integer, nullable=False)
     derivation_id = Column(Integer, ForeignKey("social_case_derivation.id"))
     zone = Column(String(120))
-
+    closing_id = Column(Integer, ForeignKey("social_case_close.id"))
     intervention_plans = relationship(
         "InterventionPlan", back_populates="social_case", lazy="select")
     derivation = relationship(
         "SocialCaseDerivation", uselist=False, lazy="select")
+    closing = relationship(
+        "SocialCaseClose", uselist=False, lazy="joined")
 
 
 class SocialCaseDerivation(Base, AuthorMixin, TimestampMixin):
@@ -51,3 +53,13 @@ class AssignedProfessional(Base, AuthorMixin, TimestampMixin):
     derivation_id = Column(Integer, ForeignKey("social_case_derivation.id"))
     derivation = relationship(
         "SocialCaseDerivation", back_populates="assigned_professionals", lazy="select")
+
+
+class SocialCaseClose(Base, AuthorMixin, TimestampMixin):
+    __tablename__ = "social_case_close"
+    id = Column(Integer, primary_key=True, unique=True, autoincrement=True)
+    date = Column(DateTime(timezone=True), nullable=False)
+    state = Column(String(20), nullable=False)
+    professional_id = Column(Integer, nullable=False)
+    professional_names = Column(String(120), nullable=False)
+    observations = Column(String(900), nullable=False)

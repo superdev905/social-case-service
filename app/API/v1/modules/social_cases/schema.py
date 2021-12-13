@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List, Literal, Optional
+from typing import List, Optional
 from pydantic import BaseModel, Field
 from ...helpers.schema import AreaResponse, BussinessResponse, EmployeeResponse, User
 
@@ -38,6 +38,26 @@ class DerivationCreate(DerivationBase):
 class DerivationItem(DerivationBase):
     assigned_professionals: Optional[List[AssignedProfessionalItem]] = Field(
         alias="professionals")
+
+
+class ClosingBase(BaseModel):
+    date: datetime
+    state: str
+    professional_id: int = Field(alias="professionalId")
+    professional_names: str = Field(alias="professionalNames")
+    observations: str
+
+    class Config:
+        orm_mode = True
+        allow_population_by_field_name = True
+
+
+class ClosingCreate(ClosingBase):
+    pass
+
+
+class ClosingItem(ClosingBase):
+    id: int
 
 
 class SocialCaseBase(BaseModel):
@@ -101,3 +121,4 @@ class SocialCaseDetails(SocialCaseItem):
     employee: EmployeeResponse
     area: AreaResponse
     professional: User
+    closing: Optional[ClosingItem]

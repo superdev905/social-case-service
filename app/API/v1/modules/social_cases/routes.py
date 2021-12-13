@@ -1,24 +1,19 @@
 from datetime import datetime
 from typing import List, Optional
-
-from sqlalchemy.sql import schema
 from fastapi import status, Request, APIRouter
 from fastapi.encoders import jsonable_encoder
 from fastapi.param_functions import Depends, Query
 from fastapi.exceptions import HTTPException
-from sqlalchemy.orm import joinedload
 from sqlalchemy.orm.session import Session
-from sqlalchemy.sql.elements import and_, or_
+from sqlalchemy.sql.elements import or_
 from fastapi_pagination import Params, Page
 from fastapi_pagination.ext.sqlalchemy import paginate
 from app.database.main import get_database
 from ...middlewares.auth import JWTBearer
 from ...helpers.fetch_data import fetch_parameter_data, fetch_users_service, get_business_data, get_employee_data
-from ...helpers.crud import get_updated_obj
-from ...helpers.humanize_date import get_time_ago
 from ...helpers.schema import SuccessResponse
-from .model import SocialCase, SocialCaseDerivation
-from .schema import DerivationCreate, DerivationItem, SocialCaseCreate, SocialCaseDetails, SocialCaseItem, SocialCaseSimple
+from .model import SocialCase, SocialCaseDerivation, SocialCaseClose
+from .schema import ClosingCreate, ClosingItem, DerivationCreate, DerivationItem, SocialCaseCreate, SocialCaseDetails, SocialCaseItem, SocialCaseSimple
 from .services import create_professionals
 
 router = APIRouter(prefix="/social-cases",
@@ -147,6 +142,7 @@ def create_derivation(req: Request,
     create_professionals(db, professionals, db_derivation.id,  user_id)
 
     social_case.derivation_id = db_derivation.id
+    social_case.state = "ASIGNADO"
 
     db.add(social_case)
     db.commit()
@@ -180,3 +176,41 @@ def get_derivation(req: Request,
             status_code=status.HTTP_400_BAD_REQUEST, detail="No existe una derivación con este id: %s" % format(derivation_id))
 
     return derivation
+
+
+@router.post("/{id}/close", response_model=ClosingItem)
+def close_case(req: Request,
+               id: int,
+               body: ClosingCreate,
+               db: Session = Depends(get_database)):
+    """
+    Cierra un caso social
+    ---
+    - **id**: id
+    """
+    social_case = db.query(SocialCase).filter(
+        SocialCase.id == id).first()
+
+    if not social_case:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="No existe un caso social con este id: %s".format(id))
+
+    user_id = req.user_id
+
+    status = jsonable_encoder(body, by_alias=False)
+    status["created_by"] = user_id
+
+    db_status = SocialCaseClose(**status)
+
+    db.add(db_status)
+    db.commit()
+    db.refresh(db_status)
+
+    social_case.closing_id = db_status.id
+    social_case.state = "CERRADO"
+
+    db.add(social_case)
+    db.commit()
+    db.refresh(social_case)
+
+    return db_status
