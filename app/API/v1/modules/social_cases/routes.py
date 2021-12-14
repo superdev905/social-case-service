@@ -53,14 +53,14 @@ def get_all(business_id: int = Query(None, alias="businessId"),
     if(area_id):
         filters.append(SocialCase.area_id == area_id)
     if (zone):
-        filters.append(SocialCase.zone.like(zone))
+        filters.append(SocialCase.zone == zone)
     if (start_date):
         date_filters.append(func.date(SocialCase.date) >= start_date)
     if (end_date):
         date_filters.append(func.date(SocialCase.date) <= end_date)
 
     if (state):
-        filters.append(SocialCase.state.like(state))
+        filters.append(SocialCase.state == state)
     if(search):
         formatted_search = "{}%".format(search)
         search_filters.append(SocialCase.employee_rut.ilike(formatted_search))
@@ -69,7 +69,7 @@ def get_all(business_id: int = Query(None, alias="businessId"),
         search_filters.append(
             SocialCase.business_name.ilike(formatted_search))
 
-    return paginate(db.query(SocialCase).filter(or_(*filters, *search_filters, and_(*date_filters))).order_by(SocialCase.created_at.desc()), pag_params)
+    return paginate(db.query(SocialCase).filter(or_(and_(*filters), *search_filters, and_(*date_filters))).order_by(SocialCase.created_at.desc()), pag_params)
 
 
 @router.get("/collect", response_model=List[SocialCaseSimple])
