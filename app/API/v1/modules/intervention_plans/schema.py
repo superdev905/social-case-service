@@ -1,5 +1,7 @@
 from datetime import datetime
 from pydantic import BaseModel, Field
+from ...helpers.schema import User
+from ..social_cases.schema import SocialCaseItem
 
 
 class PlanBase(BaseModel):
@@ -35,4 +37,10 @@ class PlanCreate(PlanBase):
 class PlanItem(PlanBase):
     id: int
     is_active: bool = Field(alias="isActive")
+    is_completed: bool = Field(alias="isCompleted")
     created_at: datetime = Field(alias="createdDate")
+
+
+class PlanDetails(PlanItem):
+    social_case: SocialCaseItem = Field(alias="socialCase")
+    professional: User

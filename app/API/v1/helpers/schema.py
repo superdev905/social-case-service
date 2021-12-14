@@ -14,6 +14,7 @@ class User (BaseModel):
     names: str
     paternal_surname: str = Field(alias='paternalSurname')
     maternal_surname: str = Field(alias='maternalSurname')
+    charge_name: Optional[str] = Field(alias='charge')
 
 
 class PaginationResponse (BaseModel):

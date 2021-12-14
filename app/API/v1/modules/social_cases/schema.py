@@ -102,14 +102,26 @@ class SocialCaseCreate(SocialCaseBase):
 class SocialCaseItem(SocialCaseBase):
     id: int
     is_active: bool = Field(alias="isActive")
+    state: str
     created_at: datetime = Field(alias="createdDate")
     derivation_id: Optional[int] = Field(alias="derivationId")
+
+
+class PlanItem(BaseModel):
+    id: int
+    management_id: int = Field(alias="managementId")
+    management_name: str = Field(alias="managementName")
+
+    class Config:
+        orm_mode = True
+        allow_population_by_field_name = True
 
 
 class SocialCaseSimple(BaseModel):
     id: int
     date: datetime
     employee_names: str = Field(alias="employeeNames")
+    intervention_plans: List[PlanItem] = Field(alias="interventionPlans")
 
     class Config:
         orm_mode = True

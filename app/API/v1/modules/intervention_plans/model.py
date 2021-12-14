@@ -17,6 +17,7 @@ class InterventionPlan(Base, AuthorMixin, TimestampMixin):
     professional_id = Column(Integer, nullable=False)
     professional_names = Column(String(200), nullable=False)
     is_active = Column(Boolean, nullable=False, default=True)
+    is_completed = Column(Boolean, nullable=False, server_default="0")
 
     social_case = relationship(
         "SocialCase", back_populates="intervention_plans", lazy="select")

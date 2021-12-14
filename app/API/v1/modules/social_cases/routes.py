@@ -1,5 +1,7 @@
 from datetime import datetime
 from typing import List, Optional
+
+from sqlalchemy.orm import joinedload
 from fastapi import status, Request, APIRouter
 from fastapi.encoders import jsonable_encoder
 from fastapi.param_functions import Depends, Query
@@ -30,6 +32,7 @@ def get_all(business_id: int = Query(None, alias="businessId"),
             professional_id: int = Query(None, alias="professionalId"),
             delegation: str = None,
             area_id: int = Query(None, alias="areaId"),
+            search: str = None,
             db: Session = Depends(get_database),
             pag_params: Params = Depends()):
     """
@@ -37,6 +40,7 @@ def get_all(business_id: int = Query(None, alias="businessId"),
     ---
     """
     filters = []
+    search_filters = []
 
     if(business_id):
         filters.append(SocialCase.business_id == business_id)
@@ -48,15 +52,26 @@ def get_all(business_id: int = Query(None, alias="businessId"),
         filters.append(SocialCase.area_id == area_id)
     if (zone):
         filters.append(SocialCase.zone.like(zone))
+    if (start_date):
+        filters.append(SocialCase.date >= start_date)
+    if (end_date):
+        filters.append(SocialCase.date <= end_date)
     if (state):
         filters.append(SocialCase.state.like(state))
+    if(search):
+        formatted_search = "{}%".format(search)
+        search_filters.append(SocialCase.employee_rut.ilike(formatted_search))
+        search_filters.append(
+            SocialCase.employee_names.ilike(formatted_search))
+        search_filters.append(
+            SocialCase.business_name.ilike(formatted_search))
 
-    return paginate(db.query(SocialCase).filter(or_(*filters)).order_by(SocialCase.created_at), pag_params)
+    return paginate(db.query(SocialCase).filter(or_(*filters, *search_filters)).order_by(SocialCase.created_at.desc()), pag_params)
 
 
 @router.get("/collect", response_model=List[SocialCaseSimple])
 def get_all_simple(db: Session = Depends(get_database)):
-    return db.query(SocialCase).filter(SocialCase.is_active == True).order_by(SocialCase.created_at).all()
+    return db.query(SocialCase).filter(SocialCase.is_active == True).options(joinedload(SocialCase.intervention_plans)).order_by(SocialCase.created_at).all()
 
 
 @router.post("", response_model=SocialCaseItem)
