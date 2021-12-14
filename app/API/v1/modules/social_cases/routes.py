@@ -2,12 +2,13 @@ from datetime import datetime
 from typing import List, Optional
 
 from sqlalchemy.orm import joinedload
+from sqlalchemy.sql.functions import func
 from fastapi import status, Request, APIRouter
 from fastapi.encoders import jsonable_encoder
 from fastapi.param_functions import Depends, Query
 from fastapi.exceptions import HTTPException
 from sqlalchemy.orm.session import Session
-from sqlalchemy.sql.elements import or_
+from sqlalchemy.sql.elements import and_, or_
 from fastapi_pagination import Params, Page
 from fastapi_pagination.ext.sqlalchemy import paginate
 from app.database.main import get_database
@@ -41,6 +42,7 @@ def get_all(business_id: int = Query(None, alias="businessId"),
     """
     filters = []
     search_filters = []
+    date_filters = []
 
     if(business_id):
         filters.append(SocialCase.business_id == business_id)
@@ -53,9 +55,10 @@ def get_all(business_id: int = Query(None, alias="businessId"),
     if (zone):
         filters.append(SocialCase.zone.like(zone))
     if (start_date):
-        filters.append(SocialCase.date >= start_date)
+        date_filters.append(func.date(SocialCase.date) >= start_date)
     if (end_date):
-        filters.append(SocialCase.date <= end_date)
+        date_filters.append(func.date(SocialCase.date) <= end_date)
+
     if (state):
         filters.append(SocialCase.state.like(state))
     if(search):
@@ -66,7 +69,7 @@ def get_all(business_id: int = Query(None, alias="businessId"),
         search_filters.append(
             SocialCase.business_name.ilike(formatted_search))
 
-    return paginate(db.query(SocialCase).filter(or_(*filters, *search_filters)).order_by(SocialCase.created_at.desc()), pag_params)
+    return paginate(db.query(SocialCase).filter(or_(*filters, *search_filters, and_(*date_filters))).order_by(SocialCase.created_at.desc()), pag_params)
 
 
 @router.get("/collect", response_model=List[SocialCaseSimple])
