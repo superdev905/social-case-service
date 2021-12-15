@@ -45,6 +45,7 @@ def post_course_module(token: str, body) -> str:
 
 
 def fetch_service(token: str, route: str) -> str:
+    print(route)
     user_req = http.request(
         'GET', route, headers={
             "Authorization": "Bearer %s" % token

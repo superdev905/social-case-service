@@ -11,12 +11,13 @@ from sqlalchemy.orm.session import Session
 from sqlalchemy.sql.elements import and_, or_
 from fastapi_pagination import Params, Page
 from fastapi_pagination.ext.sqlalchemy import paginate
+from app.settings import SERVICES
 from app.database.main import get_database
 from ...middlewares.auth import JWTBearer
-from ...helpers.fetch_data import fetch_parameter_data, fetch_users_service, get_business_data, get_employee_data
+from ...helpers.fetch_data import fetch_parameter_data, fetch_service, fetch_users_service, get_business_data, get_employee_data
 from ...helpers.schema import SuccessResponse
 from .model import SocialCase, SocialCaseDerivation, SocialCaseClose
-from .schema import ClosingCreate, ClosingItem, DerivationCreate, DerivationItem, SocialCaseCreate, SocialCaseDetails, SocialCaseItem, SocialCaseSimple
+from .schema import ClosingCreate, ClosingItem, DerivationCreate, DerivationDetails, DerivationItem, SocialCaseCreate, SocialCaseDetails, SocialCaseItem, SocialCaseSimple
 from .services import create_professionals
 
 router = APIRouter(prefix="/social-cases",
@@ -169,7 +170,7 @@ def create_derivation(req: Request,
     return db_derivation
 
 
-@router.get("/{id}/derivation/{derivation_id}", response_model=DerivationItem)
+@router.get("/{id}/derivation/{derivation_id}", response_model=DerivationDetails)
 def get_derivation(req: Request,
                    id: int,
                    derivation_id: int,
@@ -193,7 +194,15 @@ def get_derivation(req: Request,
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail="No existe una derivación con este id: %s" % format(derivation_id))
 
-    return derivation
+    professionals = []
+
+    for i in derivation.assigned_professionals:
+        contact = fetch_service(
+            req.token, SERVICES["business"]+"/business_contacts/"+str(i.user_id))
+        professionals.append(contact)
+
+    return {**derivation.__dict__,
+            "assigned_professionals": professionals}
 
 
 @router.post("/{id}/close", response_model=ClosingItem)

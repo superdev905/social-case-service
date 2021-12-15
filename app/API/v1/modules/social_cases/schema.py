@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import List, Optional
 from pydantic import BaseModel, Field
-from ...helpers.schema import AreaResponse, BussinessResponse, EmployeeResponse, User
+from ...helpers.schema import AreaResponse, BussinessResponse, EmployeeResponse, Interlocutor, User
 
 
 class AssignedProfessional(BaseModel):
@@ -37,6 +37,11 @@ class DerivationCreate(DerivationBase):
 
 class DerivationItem(DerivationBase):
     assigned_professionals: Optional[List[AssignedProfessionalItem]] = Field(
+        alias="professionals")
+
+
+class DerivationDetails(DerivationBase):
+    assigned_professionals: Optional[List[Interlocutor]] = Field(
         alias="professionals")
 
 
