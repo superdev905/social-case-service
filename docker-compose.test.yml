@@ -3,7 +3,6 @@ version: "3"
 services:
   social-case-api-test:
     build: .
-    restart: unless-stopped
     container_name: social-case-test
     command: bash -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0
       --port 80"
@@ -13,6 +12,12 @@ services:
       - 5191:80
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    environment:
+      - ENV=testing
+      - DATABASE_URL_DEV=postgresql://Anakin:Anakin4@db:5432/social-case
+    restart: on-failure
+    depends_on:
+      - db
   db:
     restart: unless-stopped
     image: postgres:13-alpine
