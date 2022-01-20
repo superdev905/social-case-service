@@ -23,6 +23,20 @@ class PaginationResponse (BaseModel):
     total: int
 
 
+class Nationality(BaseModel):
+    description: str
+    id: int
+
+
+class CurrentJob(BaseModel):
+    admission_date: datetime = Field(alias="admissionDate")
+    business_id: int = Field(alias="businessId")
+    business_name: str = Field(alias="businessName")
+    construction_id: int = Field(alias="constructionId")
+    construction_name: str = Field(alias="constructionName")
+    salary: float
+
+
 class EmployeeResponse(BaseModel):
     run: str
     id: int
@@ -30,6 +44,8 @@ class EmployeeResponse(BaseModel):
     paternal_surname: str = Field(alias="paternalSurname")
     maternal_surname: str = Field(alias="maternalSurname")
     gender: str
+    nationality: Nationality
+    current_job: Optional[CurrentJob] = Field(alias="currentJob")
 
     class Config:
         allow_population_by_field_name = True

@@ -12,9 +12,6 @@ services:
       - 5191:80
     extra_hosts:
       - "host.docker.internal:host-gateway"
-    environment:
-      - ENV=testing
-      - DATABASE_URL_DEV=postgresql://Anakin:Anakin4@db:5432/social-case
     restart: on-failure
     depends_on:
       - db

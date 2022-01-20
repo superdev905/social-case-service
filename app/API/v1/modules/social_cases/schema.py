@@ -74,10 +74,8 @@ class SocialCaseBase(BaseModel):
     employee_names: str = Field(alias="employeeNames")
     business_id: int = Field(alias="businessId")
     business_name: str = Field(alias="businessName")
-    office: str = Field(alias="office")
     area_id: int = Field(alias="areaId")
-    delegation: str
-    zone: str
+    request_type: str = Field(alias="requestType")
 
     class Config:
         orm_mode = True
@@ -110,6 +108,10 @@ class SocialCaseItem(SocialCaseBase):
     state: str
     created_at: datetime = Field(alias="createdDate")
     derivation_id: Optional[int] = Field(alias="derivationId")
+
+
+class SocialCaseEmployee(SocialCaseItem):
+    employee: EmployeeResponse
 
 
 class PlanItem(BaseModel):

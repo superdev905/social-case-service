@@ -1,3 +1,4 @@
+from ast import Str
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.schema import ForeignKey
 from sqlalchemy.sql.sqltypes import Boolean, DateTime
@@ -16,14 +17,13 @@ class SocialCase(Base, AuthorMixin, TimestampMixin):
     employee_names = Column(String(250), nullable=False)
     business_id = Column(Integer, nullable=False)
     business_name = Column(String(200), nullable=False)
-    office = Column(String(120), nullable=False)
-    state = Column(String(25), nullable=False)
+    state = Column(String(25), nullable=False, server_default="CERRADO")
+    request_type = Column(String(400), nullable=False,
+                          server_default="Tipo de solicitud")
     is_active = Column(Boolean, nullable=False, default=True)
     area_id = Column(Integer, nullable=False)
-    delegation = Column(String(120), nullable=False)
     professional_id = Column(Integer, nullable=False)
     derivation_id = Column(Integer, ForeignKey("social_case_derivation.id"))
-    zone = Column(String(120))
     closing_id = Column(Integer, ForeignKey("social_case_close.id"))
     intervention_plans = relationship(
         "InterventionPlan", back_populates="social_case", lazy="select")

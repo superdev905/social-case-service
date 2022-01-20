@@ -1,4 +1,5 @@
 from datetime import datetime
+from os import getegid
 from typing import List, Optional
 
 from sqlalchemy.orm import joinedload
@@ -17,7 +18,7 @@ from ...middlewares.auth import JWTBearer
 from ...helpers.fetch_data import fetch_parameter_data, fetch_service, fetch_users_service, get_business_data, get_employee_data
 from ...helpers.schema import SuccessResponse
 from .model import SocialCase, SocialCaseDerivation, SocialCaseClose
-from .schema import ClosingCreate, ClosingItem, DerivationCreate, DerivationDetails, DerivationItem, SocialCaseCreate, SocialCaseDetails, SocialCaseItem, SocialCaseSimple
+from .schema import ClosingCreate, ClosingItem, DerivationCreate, DerivationDetails, DerivationItem, SocialCaseCreate, SocialCaseDetails, SocialCaseEmployee, SocialCaseItem, SocialCaseSimple
 from .services import create_professionals
 
 router = APIRouter(prefix="/social-cases",
@@ -74,6 +75,31 @@ def get_all(business_id: int = Query(None, alias="businessId"),
             SocialCase.business_name.ilike(formatted_search))
 
     return paginate(db.query(SocialCase).filter(or_(and_(*filters), *search_filters, and_(*date_filters))).order_by(SocialCase.created_at.desc()), pag_params)
+
+
+@router.get("/employee", response_model=Page[SocialCaseEmployee])
+def get_employees_to_attend(req: Request, business_id: int = Query(None, alias="businessId"),
+                            db: Session = Depends(get_database),
+                            pag_params: Params = Depends()):
+    if business_id:
+        business = get_business_data(req, business_id)
+
+        if business["social_service"] == "SI":
+            filters = []
+            filters.append(SocialCase.business_id == business_id)
+            filters.append(SocialCase.state != "CERRADO")
+            filters.append(SocialCase.is_active != False)
+
+            result = paginate(db.query(SocialCase).filter(
+                and_(*filters)).order_by(SocialCase.created_at.desc()), pag_params)
+            docs = []
+            for i in result.items:
+                employee = get_employee_data(req, i.employee_id)
+                docs.append({**i.__dict__, "employee": employee})
+            result.items = docs
+            return result
+        else:
+            return []
 
 
 @router.get("/collect", response_model=List[SocialCaseSimple])
