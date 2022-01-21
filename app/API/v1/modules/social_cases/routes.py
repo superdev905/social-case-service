@@ -99,7 +99,7 @@ def get_employees_to_attend(req: Request, business_id: int = Query(None, alias="
             result.items = docs
             return result
         else:
-            return []
+            return {"items": [], "page": 1, "size": 30, "total": 0}
 
 
 @router.get("/collect", response_model=List[SocialCaseSimple])
