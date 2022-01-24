@@ -29,12 +29,12 @@ class Nationality(BaseModel):
 
 
 class CurrentJob(BaseModel):
-    admission_date: datetime = Field(alias="admissionDate")
-    business_id: int = Field(alias="businessId")
-    business_name: str = Field(alias="businessName")
-    construction_id: int = Field(alias="constructionId")
-    construction_name: str = Field(alias="constructionName")
-    salary: float
+    admission_date: Optional[datetime] = Field(alias="admissionDate")
+    business_id: Optional[int] = Field(alias="businessId")
+    business_name: Optional[str] = Field(alias="businessName")
+    construction_id: Optional[int] = Field(alias="constructionId")
+    construction_name: Optional[str] = Field(alias="constructionName")
+    salary: Optional[float]
 
 
 class EmployeeResponse(BaseModel):
