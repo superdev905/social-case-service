@@ -1,4 +1,5 @@
 from datetime import datetime
+from lib2to3.pgen2.token import OP
 from typing import Optional
 from pydantic import BaseModel, Field
 from pydantic.errors import EmailError
@@ -12,6 +13,7 @@ class SuccessResponse(BaseModel):
 class User (BaseModel):
     id: int
     names: str
+    email: str
     paternal_surname: str = Field(alias='paternalSurname')
     maternal_surname: str = Field(alias='maternalSurname')
     charge_name: Optional[str] = Field(alias='charge')
@@ -46,17 +48,6 @@ class EmployeeResponse(BaseModel):
     gender: str
     nationality: Nationality
     current_job: Optional[CurrentJob] = Field(alias="currentJob")
-
-    class Config:
-        allow_population_by_field_name = True
-
-
-class BussinessResponse(BaseModel):
-    rut: str
-    id: int
-    address: str
-    email: str
-    business_name: str = Field(alias="businessName")
 
     class Config:
         allow_population_by_field_name = True
@@ -112,7 +103,7 @@ class BussinessResponse(BaseModel):
     rut: str
     id: int
     address: str
-    email: str
+    email: Optional[str]
     type: str
     business_name: str = Field(alias="businessName")
     region: Region

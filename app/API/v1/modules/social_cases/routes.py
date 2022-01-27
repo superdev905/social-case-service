@@ -226,8 +226,7 @@ def get_derivation(req: Request,
     professionals = []
 
     for i in derivation.assigned_professionals:
-        contact = fetch_service(
-            req.token, SERVICES["business"]+"/business_contacts/"+str(i.user_id))
+        contact = fetch_users_service(req, i.user_id)
         professionals.append(contact)
 
     return {**derivation.__dict__,

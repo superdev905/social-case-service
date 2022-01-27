@@ -41,7 +41,7 @@ class DerivationItem(DerivationBase):
 
 
 class DerivationDetails(DerivationBase):
-    assigned_professionals: Optional[List[Interlocutor]] = Field(
+    assigned_professionals: Optional[List[User]] = Field(
         alias="professionals")
 
 
