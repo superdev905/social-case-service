@@ -105,9 +105,14 @@ def get_one(req: Request,
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail="No existe una tarea con este id: %s".format(id))
     professional = fetch_users_service(req, found_plan.professional_id)
+    employee = get_employee_data(req, found_plan.social_case.employee_id)
 
     return {**found_plan.__dict__,
-            "professional": professional}
+            "professional": professional,
+            "social_case": {
+                **found_plan.social_case.__dict__,
+                "employee": employee
+            }}
 
 
 @router.put("/{id}", response_model=PlanItem)

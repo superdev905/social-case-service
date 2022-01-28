@@ -1,6 +1,6 @@
 from datetime import datetime
 from pydantic import BaseModel, Field
-from ...helpers.schema import User
+from ...helpers.schema import EmployeeResponse, User
 from ..social_cases.schema import SocialCaseItem
 
 
@@ -41,6 +41,10 @@ class PlanItem(PlanBase):
     created_at: datetime = Field(alias="createdDate")
 
 
+class SocialCaseEmployee(SocialCaseItem):
+    employee: EmployeeResponse
+
+
 class PlanDetails(PlanItem):
-    social_case: SocialCaseItem = Field(alias="socialCase")
+    social_case: SocialCaseEmployee = Field(alias="socialCase")
     professional: User
