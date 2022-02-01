@@ -40,14 +40,14 @@ services_hostnames = {
         "production": BASE_HOSTNAME + ":5109/api/v1",
     },
     "housing": {
-        "development": BASE_HOSTNAME + "5195/api/v1",
-        "testing": BASE_HOSTNAME + "5199/api/v1",
-        "production": BASE_HOSTNAME + "5112/api/v1"
+        "development": BASE_HOSTNAME + ":5195/api/v1",
+        "testing": BASE_HOSTNAME + ":5199/api/v1",
+        "production": BASE_HOSTNAME + ":5112/api/v1"
     },
     "assistance": {
-        "development": BASE_HOSTNAME + "5100/api/v1",
-        "testing": BASE_HOSTNAME + "5191/api/v1",
-        "production": BASE_HOSTNAME + "5101/api/v1"
+        "development": BASE_HOSTNAME + ":5100/api/v1",
+        "testing": BASE_HOSTNAME + ":5191/api/v1",
+        "production": BASE_HOSTNAME + ":5101/api/v1"
     },
 }
 
