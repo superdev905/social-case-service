@@ -94,10 +94,9 @@ def get_employees_to_attend(req: Request, business_id: int = Query(None, alias="
                 and_(*filters)).order_by(SocialCase.created_at.desc()), pag_params)
             docs = []
             for i in result.items:
-                assistance = get_assistance(req, i.assistance_id)
                 employee = get_employee_data(req, i.employee_id)
                 docs.append({**i.__dict__, "employee": employee,
-                            "motive": assistance["management"]["name"]})
+                            "motive": "Caso social"})
             result.items = docs
             return result
         else:
