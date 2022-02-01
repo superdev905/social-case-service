@@ -112,6 +112,7 @@ class SocialCaseItem(SocialCaseBase):
 
 class SocialCaseEmployee(SocialCaseItem):
     employee: EmployeeResponse
+    motive: Optional[str]
 
 
 class PlanItem(BaseModel):

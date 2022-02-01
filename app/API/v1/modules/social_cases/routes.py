@@ -19,7 +19,7 @@ from ...helpers.fetch_data import fetch_parameter_data, fetch_service, fetch_use
 from ...helpers.schema import SuccessResponse
 from .model import SocialCase, SocialCaseDerivation, SocialCaseClose
 from .schema import ClosingCreate, ClosingItem, DerivationCreate, DerivationDetails, DerivationItem, SocialCaseCreate, SocialCaseDetails, SocialCaseEmployee, SocialCaseItem, SocialCaseSimple
-from .services import create_professionals
+from .services import create_professionals, get_assistance
 
 router = APIRouter(prefix="/social-cases",
                    tags=["Casos sociales"],
@@ -94,8 +94,10 @@ def get_employees_to_attend(req: Request, business_id: int = Query(None, alias="
                 and_(*filters)).order_by(SocialCase.created_at.desc()), pag_params)
             docs = []
             for i in result.items:
+                assistance = get_assistance(req, i.assistance_id)
                 employee = get_employee_data(req, i.employee_id)
-                docs.append({**i.__dict__, "employee": employee})
+                docs.append({**i.__dict__, "employee": employee,
+                            "motive": assistance["management"]["name"]})
             result.items = docs
             return result
         else:

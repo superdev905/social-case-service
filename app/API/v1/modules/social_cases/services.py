@@ -1,8 +1,11 @@
 from typing import List
+from fastapi import Request
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm.session import Session
 from .schema import AssignedProfessional as ProfessionalSchema
 from .model import AssignedProfessional
+from app.settings import SERVICES
+from ...helpers.fetch_data import fetch_service
 
 
 def create_professionals(db: Session, list: List[ProfessionalSchema], derivation_id: int, user_id: int):
@@ -16,3 +19,7 @@ def create_professionals(db: Session, list: List[ProfessionalSchema], derivation
         db.add(db_item)
         db.commit()
         db.refresh(db_item)
+
+
+def get_assistance(req: Request, id: int):
+    return fetch_service(req.token, SERVICES["assistance"]+"/assistance/"+str(id))
