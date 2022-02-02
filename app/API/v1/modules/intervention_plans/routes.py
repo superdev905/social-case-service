@@ -25,6 +25,7 @@ router = APIRouter(prefix="/intervention-plans",
 
 @router.get("/calendar", response_model=List[PlanItem])
 def get_all(users: List[int] = Query(None),
+            user_id: Optional[int] = None,
             start_date: Optional[datetime] = Query(None, alias="startDate"),
             end_date: Optional[datetime] = Query(None, alias="endDate"),
             db: Session = Depends(get_database)):
@@ -33,14 +34,21 @@ def get_all(users: List[int] = Query(None),
     ---
     """
     filters = []
+    users_ids = []
+    users_filters = []
 
     if start_date and end_date:
         filters.append(InterventionPlan.next_date >= start_date)
         filters.append(InterventionPlan.next_date <= end_date)
     if users:
-        filters.append(InterventionPlan.professional_id.in_(users))
+        for i in users:
+            users_ids.append(i)
+    if user_id:
+        users_ids.append(user_id)
 
-    return db.query(InterventionPlan).filter(and_(*filters, InterventionPlan.is_active == True)).order_by(InterventionPlan.created_at).all()
+    if len(users_ids) > 0:
+        users_filters.append(InterventionPlan.professional_id.in_(users_ids))
+    return db.query(InterventionPlan).filter(and_(*filters, *users_filters, InterventionPlan.is_active == True)).order_by(InterventionPlan.created_at).all()
 
 
 @ router.get("", response_model=Page[PlanItem])
