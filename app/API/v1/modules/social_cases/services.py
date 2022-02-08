@@ -5,7 +5,7 @@ from sqlalchemy.orm.session import Session
 from .schema import AssignedProfessional as ProfessionalSchema
 from .model import AssignedProfessional
 from app.settings import SERVICES
-from ...helpers.fetch_data import fetch_service
+from ...helpers.fetch_data import fetch_service, handle_request
 
 
 def create_professionals(db: Session, list: List[ProfessionalSchema], derivation_id: int, user_id: int):
@@ -23,3 +23,12 @@ def create_professionals(db: Session, list: List[ProfessionalSchema], derivation
 
 def get_assistance(req: Request, id: int):
     return fetch_service(req.token, SERVICES["assistance"]+"/assistance/"+str(id))
+
+
+def patch_employee_status(req, employee_id: int, body):
+    print(body)
+
+    handle_request(req.token, SERVICES["employees"] +
+                   "/employees/"+str(employee_id),
+                   body,
+                   "PATCH",)

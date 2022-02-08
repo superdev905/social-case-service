@@ -68,3 +68,13 @@ def delete_file_from_store(file_key: str):
     result = handle_response(user_req)
 
     return result
+
+
+def handle_request(token: str, route: str, body, method: str = "GET",) -> str:
+    user_req = http.request(
+        method, route, headers={
+            "Authorization": "Bearer %s" % token
+        }, body=json.dumps(body))
+
+    result = handle_response(user_req)
+    return result

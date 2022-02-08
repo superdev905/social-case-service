@@ -19,7 +19,7 @@ from ...helpers.fetch_data import fetch_parameter_data, fetch_service, fetch_use
 from ...helpers.schema import SuccessResponse
 from .model import SocialCase, SocialCaseDerivation, SocialCaseClose
 from .schema import ClosingCreate, ClosingItem, DerivationCreate, DerivationDetails, DerivationItem, SocialCaseCreate, SocialCaseDetails, SocialCaseEmployee, SocialCaseItem, SocialCaseSimple
-from .services import create_professionals, get_assistance
+from .services import create_professionals, get_assistance, patch_employee_status
 
 router = APIRouter(prefix="/social-cases",
                    tags=["Casos sociales"],
@@ -126,6 +126,8 @@ def create_case(req: Request,
     db.add(db_case)
     db.commit()
     db.refresh(db_case)
+
+    patch_employee_status(req, body.employee_id, {"has_social_case": True})
 
     return db_case
 
@@ -268,5 +270,11 @@ def close_case(req: Request,
     db.add(social_case)
     db.commit()
     db.refresh(social_case)
+
+    employee_cases = db.query(SocialCase).filter(and_(SocialCase.is_active == True,
+                                                      SocialCase.employee_id == social_case.employee_id, SocialCase.state != "CERRADO")).first()
+
+    patch_employee_status(req, social_case.employee_id, {
+                          "has_social_case": bool(employee_cases)})
 
     return db_status
