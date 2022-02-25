@@ -40,14 +40,19 @@ class CurrentJob(BaseModel):
 
 
 class EmployeeResponse(BaseModel):
-    run: str
     id: int
+    run: str
     names: str
     paternal_surname: str = Field(alias="paternalSurname")
     maternal_surname: str = Field(alias="maternalSurname")
     gender: str
     nationality: Nationality
     current_job: Optional[CurrentJob] = Field(alias="currentJob")
+    born_date: datetime
+    marital_status_id: int
+    isapre_fonasa_id: int
+    isapre_fonasa_name: str
+    afp_isp_id: int
 
     class Config:
         allow_population_by_field_name = True
