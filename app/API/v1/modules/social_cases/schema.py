@@ -86,7 +86,7 @@ class SocialCaseCreate(SocialCaseBase):
     area_id: int = Field(alias="areaId"),
     assistance_id: int = Field(alias="assistanceId"),
     business_name: str = Field(alias="businessName"),
-    date: datetime.now() = Fiel(alias="date"),
+    date: datetime.now() = Field(alias="date"),
     employee_id: str = Field(alias="employeeId"),
     employee_names: str = Field(alias="employeeNames")
     employee_rut: str = Field(alias="employeeRut")
