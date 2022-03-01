@@ -83,23 +83,19 @@ class SocialCaseBase(BaseModel):
 
 
 class SocialCaseCreate(SocialCaseBase):
+    area_id: int = Field(alias="areaId"),
+    assistance_id: int = Field(alias="assistanceId"),
+    business_name: str = Field(alias="businessName"),
+    date: datetime.now() = Fiel(alias="date"),
+    employee_id: str = Field(alias="employeeId"),
+    employee_names: str = Field(alias="employeeNames")
+    employee_rut: str = Field(alias="employeeRut")
+    profesional_id: str = Field(alias="profesionalId")
+    request_type: str = Field(alias="requestType")
+
     class Config:
-        schema_extra = {
-            "example": {
-                "date": datetime.now(),
-                "assistanceId": 49,
-                "employeeRut": "24.150.582-0",
-                "employeeId": 41,
-                "employeeNames": "TEST DE ERROR ERROR ERRORCITO",
-                "businessId": 11,
-                "businessName": "EMP 34",
-                "office": "ANTOFAGASTA",
-                "areaId": 2,
-                "delegation": "ANTOFAGASTA",
-                "zone": "ANTOFAGASTA",
-                "professionalId": 1
-            }
-        }
+        orm_mode = True
+        allow_population_by_field_name = True
 
 
 class SocialCaseItem(SocialCaseBase):
