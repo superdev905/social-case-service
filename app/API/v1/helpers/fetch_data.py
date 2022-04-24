@@ -29,9 +29,9 @@ def fetch_users_service(req: Request, user_id: int) -> str:
         })
     result = handle_response(user_req)
 
-    return {**result,
-            "paternalSurname": result["paternal_surname"],
-            "maternalSurname": result["maternal_surname"]}
+    return {**result[0],
+            "paternalSurname": result[0]["paternal_surname"],
+            "maternalSurname": result[0]["maternal_surname"]}
 
 
 def post_course_module(token: str, body) -> str:
