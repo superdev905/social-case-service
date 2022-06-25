@@ -54,6 +54,7 @@ def get_all(users: List[int] = Query(None),
 @ router.get("", response_model=Page[PlanItem])
 def get_all(social_case_id: int = Query(None, alias="socialCaseId"),
             user_id: Optional[int] = None,
+            rol: Optional[str] = None,
             search: str = None,
             db: Session = Depends(get_database),
             pag_params: Params = Depends()):
@@ -63,7 +64,10 @@ def get_all(social_case_id: int = Query(None, alias="socialCaseId"),
     """
     filters = []
     search_filters = []
+    filterById = []
 
+    if rol != 'ADMIN' or rol != 'JEFATURA':
+        filterById.append(InterventionPlan.professional_id == user_id)
     if social_case_id:
         filters.append(InterventionPlan.social_case_id == social_case_id)
     if search:
@@ -72,7 +76,7 @@ def get_all(social_case_id: int = Query(None, alias="socialCaseId"),
             InterventionPlan.management_name.ilike(formatted_search))
         search_filters.append(
             InterventionPlan.professional_names.ilike(formatted_search))
-    return paginate(db.query(InterventionPlan).filter(and_(or_(*filters, *search_filters), InterventionPlan.is_active == True, InterventionPlan.professional_id == user_id)).order_by(InterventionPlan.created_at), pag_params)
+    return paginate(db.query(InterventionPlan).filter(and_(or_(*filters, *search_filters), InterventionPlan.is_active == True, *filterById)).order_by(InterventionPlan.created_at), pag_params)
 
 
 @ router.post("", response_model=PlanItem)
