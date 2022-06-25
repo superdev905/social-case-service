@@ -15,8 +15,10 @@ class SocialCase(Base, AuthorMixin, TimestampMixin):
     employee_rut = Column(String(12), nullable=False)
     employee_id = Column(Integer, nullable=False)
     employee_names = Column(String(250), nullable=False)
-    business_id = Column(Integer, nullable=False)
-    business_name = Column(String(200), nullable=False)
+    business_id = Column(Integer, nullable=True)
+    business_name = Column(String(200), nullable=True)
+    construction_id = Column(Integer, nullable=True)
+    construction_name = Column(String(255), nullable=True)
     state = Column(String(25), nullable=False, server_default="CERRADO")
     request_type = Column(String(400), nullable=False,
                           server_default="Tipo de solicitud")
