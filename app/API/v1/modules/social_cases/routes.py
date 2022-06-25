@@ -103,9 +103,9 @@ def get_employees_to_attend(req: Request, business_id: int = Query(None, alias="
             return {"items": [], "page": 1, "size": 30, "total": 0}
 
 
-@router.get("/collect", response_model=List[SocialCaseSimple])
-def get_all_simple(db: Session = Depends(get_database)):
-    return db.query(SocialCase).filter(SocialCase.is_active == True).options(joinedload(SocialCase.intervention_plans)).order_by(SocialCase.created_at).all()
+@router.get("/collect/{id}", response_model=List[SocialCaseSimple])
+def get_all_simple(id: int, db: Session = Depends(get_database)):
+    return db.query(SocialCase).filter(and_(SocialCase.is_active == True, SocialCase.employee_id == id)).options(joinedload(SocialCase.intervention_plans)).order_by(SocialCase.created_at).all()
 
 
 @router.post("", response_model=SocialCaseItem)
