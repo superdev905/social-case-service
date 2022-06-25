@@ -66,7 +66,7 @@ def get_all(social_case_id: int = Query(None, alias="socialCaseId"),
     search_filters = []
     filterById = []
 
-    if rol != 'ADMIN' or rol != 'JEFATURA':
+    if rol != 'ADMIN' and rol != 'JEFATURA':
         filterById.append(InterventionPlan.professional_id == user_id)
     if social_case_id:
         filters.append(InterventionPlan.social_case_id == social_case_id)
