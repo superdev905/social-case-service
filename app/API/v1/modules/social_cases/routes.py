@@ -65,7 +65,7 @@ def get_all(business_id: int = Query(None, alias="businessId"),
     if (state):
         filters.append(SocialCase.state == state)
     if user_id:
-        filters.append(SocialCase.assistance_id == user_id)
+        filters.append(SocialCase.professional_id == user_id, SocialCase.created_by == user_id)
     if(search):
         formatted_search = "{}%".format(search)
         search_filters.append(SocialCase.employee_rut.ilike(formatted_search))

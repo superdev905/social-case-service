@@ -74,6 +74,8 @@ class SocialCaseBase(BaseModel):
     employee_names: str = Field(alias="employeeNames")
     business_id: int = Field(alias="businessId")
     business_name: str = Field(alias="businessName")
+    construction_id: int = Field(alias="constructionId")
+    construction_name: str = Field(alias="constructionName")
     area_id: int = Field(alias="areaId")
     request_type: str = Field(alias="requestType")
 
@@ -129,6 +131,7 @@ class SocialCaseSimple(BaseModel):
     id: int
     date: datetime
     employee_names: str = Field(alias="employeeNames")
+    employee_id: int = Field(alias="employeeId")
     intervention_plans: List[PlanItem] = Field(alias="interventionPlans")
 
     class Config:

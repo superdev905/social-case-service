@@ -1,0 +1,30 @@
+version: "3"
+
+services:
+  social-case-api:
+    build: .
+    container_name: social-case-api
+    command: bash -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0
+      --port 80"
+    volumes:
+      - .:/app
+    ports:
+      - 5191:80
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: on-failure
+    depends_on:
+      - db
+  db:
+    restart: unless-stopped
+    image: postgres:13-alpine
+    volumes:
+      - social-case_data:/var/lib/postgresql/data/
+    expose:
+      - 5432
+    environment:
+      - POSTGRES_USER=Anakin
+      - POSTGRES_PASSWORD=Anakin4
+      - POSTGRES_DB=social-case
+volumes:
+  social-case_data: null
