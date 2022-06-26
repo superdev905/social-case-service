@@ -35,7 +35,6 @@ def get_all(business_id: int = Query(None, alias="businessId"),
             professional_id: int = Query(None, alias="professionalId"),
             delegation: str = None,
             area_id: int = Query(None, alias="areaId"),
-            user_id: int = Query(None, alias="userId"),
             search: str = None,
             db: Session = Depends(get_database),
             pag_params: Params = Depends()):
@@ -61,11 +60,8 @@ def get_all(business_id: int = Query(None, alias="businessId"),
         date_filters.append(func.date(SocialCase.date) >= start_date)
     if (end_date):
         date_filters.append(func.date(SocialCase.date) <= end_date)
-
     if (state):
         filters.append(SocialCase.state == state)
-    if user_id:
-        filters.append(SocialCase.professional_id == user_id, SocialCase.created_by == user_id)
     if(search):
         formatted_search = "{}%".format(search)
         search_filters.append(SocialCase.employee_rut.ilike(formatted_search))
