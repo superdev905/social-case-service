@@ -287,4 +287,6 @@ def add_derivation_state_id(id: int, userId: int, db: Session = Depends(get_data
         SocialCase.id == id
     ).first()
 
-    print(social_case)
+    result = jsonable_encoder(social_case)
+
+    print(result)
