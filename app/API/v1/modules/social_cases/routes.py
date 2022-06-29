@@ -116,7 +116,7 @@ def create_case(req: Request,
     new_case = jsonable_encoder(body, by_alias=False)
     new_case["created_by"] = req.user_id
     new_case["state"] = "SOLICITADO"
-    print(new_case["derivationState"])
+    print(body, new_case)
     db_case = SocialCase(**new_case)
 
     db.add(db_case)
