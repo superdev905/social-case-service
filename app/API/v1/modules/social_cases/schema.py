@@ -1,4 +1,5 @@
 from datetime import datetime
+from lib2to3.pgen2.token import OP
 from typing import List, Optional
 from pydantic import BaseModel, Field
 from ...helpers.schema import AreaResponse, BussinessResponse, EmployeeResponse, Interlocutor, User
@@ -110,6 +111,7 @@ class SocialCaseItem(SocialCaseBase):
     state: str
     created_at: datetime = Field(alias="createdDate")
     derivation_id: Optional[int] = Field(alias="derivationId")
+    derivation_state: Optional[str] = Field(alias="derivationState")
 
 
 class SocialCaseEmployee(SocialCaseItem):
