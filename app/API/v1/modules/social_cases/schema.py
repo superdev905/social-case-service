@@ -80,6 +80,7 @@ class SocialCaseBase(BaseModel):
     area_id: int = Field(alias="areaId")
     request_type: str = Field(alias="requestType")
     derivation_state: Optional[str] = Field(alias="derivationState")
+    assistance_derivation_id: Optional[int] = Field(alias='assistanceDerivationId')
 
     class Config:
         orm_mode = True
@@ -113,9 +114,6 @@ class SocialCaseItem(SocialCaseBase):
     state: str
     created_at: datetime = Field(alias="createdDate")
     derivation_id: Optional[int] = Field(alias="derivationId")
-
-class DerivationStateId(SocialCaseBase):
-    assistance_derivation_id: int = Field(alias='assistanceDerivationId')
 
 
 class SocialCaseEmployee(SocialCaseItem):
