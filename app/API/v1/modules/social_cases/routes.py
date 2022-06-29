@@ -118,6 +118,7 @@ def create_case(req: Request,
     new_case["created_by"] = req.user_id
     new_case["state"] = "SOLICITADO"
     print(**new_case)
+    print(new_case["derivationState"])
     db_case = SocialCase(**new_case)
 
     db.add(db_case)
