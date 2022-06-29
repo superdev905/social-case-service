@@ -100,7 +100,8 @@ class SocialCaseCreate(SocialCaseBase):
                 "areaId": 2,
                 "delegation": "ANTOFAGASTA",
                 "zone": "ANTOFAGASTA",
-                "professionalId": 1
+                "professionalId": 1,
+                "derivationState": "AUTODERIVACIÓN"
             }
         }
 
