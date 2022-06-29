@@ -288,5 +288,10 @@ def add_derivation_state_id(id: int, userId: int, db: Session = Depends(get_data
     ).first()
 
     result = jsonable_encoder(social_case)
+    result["assistance_derivation_id"] = userId
+
+    db.add(result)
+    db.commit()
+    db.refresh(result)
 
     print(result)
