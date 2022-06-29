@@ -294,4 +294,4 @@ def add_derivation_state_id(id: int, userId: int, db: Session = Depends(get_data
     db.commit()
     db.refresh(result)
 
-    print(result)
+    return result
