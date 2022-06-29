@@ -18,7 +18,7 @@ from ...middlewares.auth import JWTBearer
 from ...helpers.fetch_data import fetch_parameter_data, fetch_service, fetch_users_service, get_business_data, get_employee_data
 from ...helpers.schema import SuccessResponse
 from .model import SocialCase, SocialCaseDerivation, SocialCaseClose
-from .schema import ClosingCreate, ClosingItem, DerivationCreate, DerivationDetails, DerivationItem, SocialCaseCreate, SocialCaseDetails, SocialCaseEmployee, SocialCaseItem, SocialCaseSimple
+from .schema import ClosingCreate, ClosingItem, DerivationCreate, DerivationDetails, DerivationItem, SocialCaseCreate, SocialCaseDetails, SocialCaseEmployee, SocialCaseItem, SocialCaseSimple, DerivationStateId
 from .services import create_professionals, get_assistance, patch_employee_status
 
 router = APIRouter(prefix="/social-cases",
@@ -274,3 +274,17 @@ def close_case(req: Request,
                           "has_social_case": bool(employee_cases)})
 
     return db_status
+
+@router.put("/{id}/{userId}", response_model=DerivationStateId)
+def add_derivation_state_id(id: int, userId: int, db: Session = Depends(get_database)):
+    """
+    Agrega el id del asistente a la que se le deriva
+    ---
+    - **id**: id
+    """
+
+    social_case = db.query(SocialCase).filter(
+        SocialCase.id == id
+    ).first()
+
+    print(social_case)

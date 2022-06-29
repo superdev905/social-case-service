@@ -114,6 +114,9 @@ class SocialCaseItem(SocialCaseBase):
     created_at: datetime = Field(alias="createdDate")
     derivation_id: Optional[int] = Field(alias="derivationId")
 
+class DerivationStateId(SocialCaseBase):
+    assistance_derivation_id: int = Field(alias='assistanceDerivationId')
+
 
 class SocialCaseEmployee(SocialCaseItem):
     employee: EmployeeResponse
