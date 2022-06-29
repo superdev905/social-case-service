@@ -25,9 +25,9 @@ class SocialCase(Base, AuthorMixin, TimestampMixin):
     is_active = Column(Boolean, nullable=False, default=True)
     area_id = Column(Integer, nullable=False)
     professional_id = Column(Integer, nullable=False)
+    derivation_state = Column(String(25), nullable=True)
     derivation_id = Column(Integer, ForeignKey("social_case_derivation.id"))
     closing_id = Column(Integer, ForeignKey("social_case_close.id"))
-    derivation_state = Column(String(25), nullable=True)
     intervention_plans = relationship(
         "InterventionPlan", back_populates="social_case", lazy="select")
     derivation = relationship(
