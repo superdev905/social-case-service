@@ -271,7 +271,7 @@ def close_case(req: Request,
 
     return db_status
 
-@router.put("/{id}/{userId}", response_model=SocialCaseBase)
+@router.put("/{id}/{userId}", response_model=SocialCaseItem)
 def add_derivation_state_id(id: int, userId: int, db: Session = Depends(get_database)):
     """
     Agrega el id del asistente a la que se le deriva
@@ -291,4 +291,3 @@ def add_derivation_state_id(id: int, userId: int, db: Session = Depends(get_data
     db.refresh(result)
 
     print(result)
-    return {**result}
