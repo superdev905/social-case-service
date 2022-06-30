@@ -50,12 +50,8 @@ def get_all(business_id: int = Query(None, alias="businessId"),
         filters.append(SocialCase.business_id == business_id)
     if(professional_id):
         filters.append(SocialCase.professional_id == professional_id)
-    if(delegation):
-        filters.append(SocialCase.delegation.like(delegation))
     if(area_id):
         filters.append(SocialCase.area_id == area_id)
-    if (zone):
-        filters.append(SocialCase.zone == zone)
     if (start_date):
         date_filters.append(func.date(SocialCase.date) >= start_date)
     if (end_date):
@@ -288,7 +284,6 @@ def add_derivation_state_id(id: int, userId: int, db: Session = Depends(get_data
     ).first()
 
     result = jsonable_encoder(social_case)
-    result["assistance_derivation_id"] = userId
 
     db.add(result)
     db.commit()
