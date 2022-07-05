@@ -43,6 +43,7 @@ def get_all(business_id: int = Query(None, alias="businessId"),
     ---
     """
     filters = []
+    extraFilters = []
     search_filters = []
     date_filters = []
 
@@ -50,6 +51,7 @@ def get_all(business_id: int = Query(None, alias="businessId"),
         filters.append(SocialCase.business_id == business_id)
     if(professional_id):
         filters.append(SocialCase.professional_id == professional_id)
+        extraFilters.append(SocialCase.assistance_derivation_id == professional_id)
     if(area_id):
         filters.append(SocialCase.area_id == area_id)
     if (start_date):
@@ -66,7 +68,7 @@ def get_all(business_id: int = Query(None, alias="businessId"),
         search_filters.append(
             SocialCase.business_name.ilike(formatted_search))
 
-    return paginate(db.query(SocialCase).filter(or_(and_(*filters), *search_filters, and_(*date_filters))).order_by(SocialCase.created_at.desc()), pag_params)
+    return paginate(db.query(SocialCase).filter(or_(and_(*filters), *extraFilters, *search_filters, and_(*date_filters))).order_by(SocialCase.created_at.desc()), pag_params)
 
 
 @router.get("/employee", response_model=Page[SocialCaseEmployee])
@@ -271,7 +273,7 @@ def close_case(req: Request,
 
     return db_status
 
-@router.put("/{id}/{userId}", response_model=SocialCaseItem)
+@router.put("/{id}/{userId}")
 def add_derivation_state_id(id: int, userId: int, db: Session = Depends(get_database)):
     """
     Agrega el id del asistente a la que se le deriva
@@ -283,11 +285,12 @@ def add_derivation_state_id(id: int, userId: int, db: Session = Depends(get_data
         SocialCase.id == id
     ).first()
 
-    result = jsonable_encoder(social_case)
-    result["assistance_derivation_id"] = userId
+    setattr(social_case, 'assistance_derivation_id', userId)
 
-    db.add(result)
+    db.add(social_case)
     db.commit()
-    db.refresh(result)
+    db.refresh(social_case)
 
-    print(result)
+    result = jsonable_encoder(social_case)
+
+    return {**result}
