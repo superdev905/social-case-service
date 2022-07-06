@@ -1,4 +1,5 @@
 from ast import Str
+from typing import List
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.schema import ForeignKey
 from sqlalchemy.sql.sqltypes import Boolean, DateTime
@@ -26,7 +27,7 @@ class SocialCase(Base, AuthorMixin, TimestampMixin):
     area_id = Column(Integer, nullable=False)
     professional_id = Column(Integer, nullable=False)
     derivation_state = Column(String(25), nullable=True)
-    assistance_derivation_id = Column(Integer, nullable=True)
+    assistance_derivation_id = Column(Integer[int], nullable=True)
     derivation_id = Column(Integer, ForeignKey("social_case_derivation.id"))
     closing_id = Column(Integer, ForeignKey("social_case_close.id"))
     intervention_plans = relationship(

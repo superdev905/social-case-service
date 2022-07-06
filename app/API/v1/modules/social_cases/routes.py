@@ -18,7 +18,7 @@ from ...middlewares.auth import JWTBearer
 from ...helpers.fetch_data import fetch_parameter_data, fetch_service, fetch_users_service, get_business_data, get_employee_data
 from ...helpers.schema import SuccessResponse
 from .model import SocialCase, SocialCaseDerivation, SocialCaseClose
-from .schema import ClosingCreate, ClosingItem, DerivationCreate, DerivationDetails, DerivationItem, SocialCaseBase, SocialCaseCreate, SocialCaseDetails, SocialCaseEmployee, SocialCaseItem, SocialCaseSimple
+from .schema import ClosingCreate, ClosingItem, DerivationCreate, DerivationDetails, DerivationItem, SocialCaseBase, SocialCaseCreate, SocialCaseDetails, SocialCaseEmployee, SocialCaseItem, SocialCaseSimple, SocialCaseDerivationCreate
 from .services import create_professionals, get_assistance, patch_employee_status
 
 router = APIRouter(prefix="/social-cases",
@@ -51,7 +51,7 @@ def get_all(business_id: int = Query(None, alias="businessId"),
         filters.append(SocialCase.business_id == business_id)
     if(professional_id):
         filters.append(SocialCase.professional_id == professional_id)
-        extraFilters.append(SocialCase.assistance_derivation_id == professional_id)
+        #extraFilters.append(SocialCase.assistance_derivation_id)
     if(area_id):
         filters.append(SocialCase.area_id == area_id)
     if (start_date):
@@ -114,7 +114,6 @@ def create_case(req: Request,
     new_case = jsonable_encoder(body, by_alias=False)
     new_case["created_by"] = req.user_id
     new_case["state"] = "SOLICITADO"
-    print(body)
     db_case = SocialCase(**new_case)
 
     db.add(db_case)
@@ -273,19 +272,20 @@ def close_case(req: Request,
 
     return db_status
 
-@router.put("/{id}/{userId}")
-def add_derivation_state_id(id: int, userId: int, db: Session = Depends(get_database)):
+@router.put("/{id}", response_model=SocialCaseDerivationCreate)
+def add_derivation_state_id(id: int, body: SocialCaseDerivationCreate, db: Session = Depends(get_database)):
     """
     Agrega el id del asistente a la que se le deriva
     ---
     - **id**: id
     """
-
+    
+    bodyRes = jsonable_encoder(body)
     social_case = db.query(SocialCase).filter(
         SocialCase.id == id
     ).first()
 
-    setattr(social_case, 'assistance_derivation_id', userId)
+    setattr(social_case, 'assistance_derivation_id', bodyRes["assistanceDerivationId"])
 
     db.add(social_case)
     db.commit()
@@ -293,4 +293,4 @@ def add_derivation_state_id(id: int, userId: int, db: Session = Depends(get_data
 
     result = jsonable_encoder(social_case)
 
-    return {**result}
+    return{**result}
