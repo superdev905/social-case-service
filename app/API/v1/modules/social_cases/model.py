@@ -3,6 +3,7 @@ from typing import List
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.schema import ForeignKey
 from sqlalchemy.sql.sqltypes import Boolean, DateTime
+from sqlalchemy.dialects.postgresql import ARRAY
 from app.database.base_class import Base, TimestampMixin, AuthorMixin
 from sqlalchemy import Column, Integer, String
 from ..intervention_plans.model import InterventionPlan
@@ -27,7 +28,7 @@ class SocialCase(Base, AuthorMixin, TimestampMixin):
     area_id = Column(Integer, nullable=False)
     professional_id = Column(Integer, nullable=False)
     derivation_state = Column(String(25), nullable=True)
-    assistance_derivation_id = Column(Integer[int], nullable=True)
+    assistance_derivation_id = Column(ARRAY(Integer), nullable=True)
     derivation_id = Column(Integer, ForeignKey("social_case_derivation.id"))
     closing_id = Column(Integer, ForeignKey("social_case_close.id"))
     intervention_plans = relationship(
