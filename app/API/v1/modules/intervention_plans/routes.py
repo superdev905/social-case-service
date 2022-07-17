@@ -76,7 +76,7 @@ def get_all(social_case_id: int = Query(None, alias="socialCaseId"),
             InterventionPlan.management_name.ilike(formatted_search))
         search_filters.append(
             InterventionPlan.professional_names.ilike(formatted_search))
-    return paginate(db.query(InterventionPlan).filter(and_(or_(*filters, *search_filters), InterventionPlan.is_active == True, *filterById)).options(joinedload(InterventionPlan.social_case)).order_by(InterventionPlan.created_at), pag_params)
+    return paginate(db.query(InterventionPlan).filter(and_(or_(*filters, *search_filters), *filterById)).options(joinedload(InterventionPlan.social_case)).order_by(InterventionPlan.created_at), pag_params)
 
 
 @ router.post("", response_model=PlanItem)
