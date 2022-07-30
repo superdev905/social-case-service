@@ -61,6 +61,8 @@ def get_business_data(request: Request, id: int):
 def get_employee_data(request: Request, id: int):
     return fetch_service(request.token, SERVICES["employees"] + "/employees/"+str(id))
 
+def get_assistance_information(request: Request, id: int):
+    return fetch_service(request.token, SERVICES["assistance"] + "/assistance/"+str(id))
 
 def delete_file_from_store(file_key: str):
     user_req = http.request(

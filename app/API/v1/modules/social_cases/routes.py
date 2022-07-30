@@ -15,7 +15,7 @@ from fastapi_pagination.ext.sqlalchemy import paginate
 from app.settings import SERVICES
 from app.database.main import get_database
 from ...middlewares.auth import JWTBearer
-from ...helpers.fetch_data import fetch_parameter_data, fetch_service, fetch_users_service, get_business_data, get_employee_data
+from ...helpers.fetch_data import fetch_parameter_data, fetch_service, fetch_users_service, get_business_data, get_employee_data, get_assistance_information
 from ...helpers.schema import SuccessResponse
 from .model import SocialCase, SocialCaseDerivation, SocialCaseClose
 from .schema import ClosingCreate, ClosingItem, DerivationCreate, DerivationDetails, DerivationItem, SocialCaseBase, SocialCaseCreate, SocialCaseDetails, SocialCaseEmployee, SocialCaseItem, SocialCaseSimple, SocialCaseDerivationCreate
@@ -145,12 +145,14 @@ def get_one(req: Request,
     employee = get_employee_data(req, social_case.employee_id)
     area = fetch_parameter_data(req, "areas", social_case.area_id)
     professional = fetch_users_service(req,  social_case.professional_id)
+    asistencia = get_assistance_information(req, social_case.assistance_id)
 
     return {**social_case.__dict__,
             "business": business,
             "employee": employee,
             "area": area,
-            "professional": professional}
+            "professional": professional,
+            "observation": asistencia["observation"]}
 
 
 @router.post("/{id}/derivation", response_model=DerivationItem)

@@ -147,10 +147,10 @@ class SocialCaseSimple(BaseModel):
         orm_mode = True
         allow_population_by_field_name = True
 
-
 class SocialCaseDetails(SocialCaseItem):
     business: BussinessResponse
     employee: EmployeeResponse
     area: AreaResponse
     professional: User
+    asistencia: str = Field(alias="observation")
     closing: Optional[ClosingItem]
