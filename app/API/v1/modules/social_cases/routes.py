@@ -17,7 +17,7 @@ from app.database.main import get_database
 from ...middlewares.auth import JWTBearer
 from ...helpers.fetch_data import fetch_parameter_data, fetch_service, fetch_users_service, get_business_data, get_employee_data, get_assistance_information
 from ...helpers.schema import SuccessResponse
-from .model import SocialCase, SocialCaseDerivation, SocialCaseClose
+from .model import SocialCase, SocialCaseDerivation, SocialCaseClose, AssignedProfessional
 from .schema import ClosingCreate, ClosingItem, DerivationCreate, DerivationDetails, DerivationItem, SocialCaseBase, SocialCaseCreate, SocialCaseDetails, SocialCaseEmployee, SocialCaseItem, SocialCaseSimple, SocialCaseDerivationCreate
 from .services import create_professionals, get_assistance, patch_employee_status
 
@@ -297,3 +297,30 @@ def add_derivation_state_id(id: int, body: SocialCaseDerivationCreate, db: Sessi
     result = jsonable_encoder(social_case)
 
     return{**result}
+
+@router.put("/derivation/edit/{id}", response_model=DerivationDetails)
+def update_derivation(req: Request, id: int, body: DerivationCreate, db: Session = Depends(get_database)):
+    """
+    Se actualiza una derivación
+    ---
+    - **id**: id del caso social
+    """
+
+    social_case = db.query(SocialCase).filter(SocialCase.id == id).first()
+    edit_social_case = jsonable_encoder(social_case)
+
+    social_case_service = db.query(SocialCaseDerivation).filter(SocialCaseDerivation.assistance_titular_id == edit_social_case["assistance_id"]).first()
+    setattr(social_case_service, 'observations', body.observations)
+    setattr(social_case_service, 'priority', body.priority)
+
+    db.add(social_case_service)
+    db.commit()
+    db.refresh(social_case_service)
+
+    edited_social_case_service = jsonable_encoder(social_case_service)
+    db.query(AssignedProfessional).filter(AssignedProfessional.derivation_id == edited_social_case_service["id"]).delete()
+
+    user_id = req.user_id
+    professionals = body.assigned_professionals
+
+    create_professionals(db, professionals, edited_social_case_service['id'],  user_id)
