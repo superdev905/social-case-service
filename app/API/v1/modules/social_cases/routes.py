@@ -72,7 +72,7 @@ def get_all(business_id: int = Query(None, alias="businessId"),
 
 
 @router.get("/employee", response_model=Page[SocialCaseEmployee])
-def get_employees_to_attend(req: Request, business_id: int = Query(None, alias="businessId"),
+def get_employees_to_attend(req: Request, business_id: int = Query(None, alias="businessId"), user_id: int = Query(None, alias="userId"), construction_id: int = Query(None, alias="constructionId"),
                             db: Session = Depends(get_database),
                             pag_params: Params = Depends()):
     if business_id:
@@ -81,11 +81,12 @@ def get_employees_to_attend(req: Request, business_id: int = Query(None, alias="
         if business["social_service"] == "SI":
             filters = []
             filters.append(SocialCase.business_id == business_id)
+            filters.append(SocialCase.construction_id == construction_id)
             filters.append(SocialCase.state != "CERRADO")
             filters.append(SocialCase.is_active != False)
 
             result = paginate(db.query(SocialCase).filter(
-                and_(*filters)).order_by(SocialCase.created_at.desc()), pag_params)
+                and_(*filters), and_(or_(SocialCase.created_by == user_id, SocialCase.assistance_derivation_id.contains([user_id])))).order_by(SocialCase.created_at.desc()), pag_params)
             docs = []
             for i in result.items:
                 employee = get_employee_data(req, i.employee_id)
