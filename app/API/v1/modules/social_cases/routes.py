@@ -147,13 +147,12 @@ def get_one(req: Request,
     area = fetch_parameter_data(req, "areas", social_case.area_id)
     professional = fetch_users_service(req,  social_case.professional_id)
     asistencia = get_assistance_information(req, social_case.assistance_id)
-    tema = fetch_parameter_tema(req, "topics", social_case.topic_id)
 
     return {**social_case.__dict__,
             "business": business,
             "employee": employee,
             "area": area,
-            "tema": tema,
+            "tema": asistencia["topic"],
             "professional": professional,
             "observation": asistencia["observation"]}
 

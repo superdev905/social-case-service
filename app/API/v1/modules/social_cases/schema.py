@@ -2,7 +2,7 @@ from datetime import datetime
 from lib2to3.pgen2.token import OP
 from typing import List, Optional
 from pydantic import BaseModel, Field
-from ...helpers.schema import AreaResponse, BussinessResponse, EmployeeResponse, Interlocutor, User
+from ...helpers.schema import AreaResponse, BussinessResponse, EmployeeResponse, Interlocutor, User, TemaResponse
 
 
 class AssignedProfessional(BaseModel):
@@ -153,4 +153,5 @@ class SocialCaseDetails(SocialCaseItem):
     area: AreaResponse
     professional: User
     asistencia: str = Field(alias="observation")
+    tema: TemaResponse
     closing: Optional[ClosingItem]

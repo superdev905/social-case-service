@@ -119,3 +119,7 @@ class AreaResponse(BaseModel):
 
     class Config:
         allow_population_by_field_name = True
+
+class TemaResponse(BaseModel):
+    id: int
+    name: str
