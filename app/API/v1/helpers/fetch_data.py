@@ -21,6 +21,14 @@ def fetch_parameter_data(req: Request, endpoint: str, id: int) -> object:
 
     return handle_response(response)
 
+def fetch_parameter_tema(req: Request, endpoint: str, id: int) -> object:
+    response = http.request(
+        'GET', SERVICES["parameters"]+'/'+endpoint+'/'+str(id), headers={
+            "Authorization": "Bearer %s" % req.token
+        })
+
+    return handle_response(response)
+
 
 def fetch_users_service(req: Request, user_id: int) -> str:
     user_req = http.request(
