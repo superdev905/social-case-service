@@ -15,7 +15,7 @@ from fastapi_pagination.ext.sqlalchemy import paginate
 from app.settings import SERVICES
 from app.database.main import get_database
 from ...middlewares.auth import JWTBearer
-from ...helpers.fetch_data import fetch_parameter_data, fetch_parameter_tema, fetch_service, fetch_users_service, get_business_data, get_employee_data, get_assistance_information
+from ...helpers.fetch_data import fetch_parameter_data, fetch_service, fetch_users_service, get_business_data, get_employee_data, get_assistance_information
 from ...helpers.schema import SuccessResponse
 from .model import SocialCase, SocialCaseDerivation, SocialCaseClose, AssignedProfessional
 from .schema import ClosingCreate, ClosingItem, DerivationCreate, DerivationDetails, DerivationItem, SocialCaseBase, SocialCaseCreate, SocialCaseDetails, SocialCaseEmployee, SocialCaseItem, SocialCaseSimple, SocialCaseDerivationCreate
