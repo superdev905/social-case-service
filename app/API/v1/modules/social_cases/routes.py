@@ -18,8 +18,11 @@ from ...middlewares.auth import JWTBearer
 from ...helpers.fetch_data import fetch_parameter_data, fetch_service, fetch_users_service, get_business_data, get_employee_data, get_assistance_information
 from ...helpers.schema import SuccessResponse
 from .model import SocialCase, SocialCaseDerivation, SocialCaseClose, AssignedProfessional
-from .schema import ClosingCreate, ClosingItem, DerivationCreate, DerivationDetails, DerivationItem, SocialCaseBase, SocialCaseCreate, SocialCaseDetails, SocialCaseEmployee, SocialCaseItem, SocialCaseSimple, SocialCaseDerivationCreate
+from .schema import ClosingCreate, ClosingItem, DerivationCreate, DerivationDetails, DerivationItem, SocialCaseBase, SocialCaseCreate, SocialCaseDetails, SocialCaseEmployee, SocialCaseItem, SocialCaseSimple, SocialCaseDerivationCreate, SocialCaseMail
 from .services import create_professionals, get_assistance, patch_employee_status
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+import smtplib
 
 router = APIRouter(prefix="/social-cases",
                    tags=["Casos sociales"],
@@ -325,3 +328,117 @@ def update_derivation(req: Request, id: int, body: DerivationCreate, db: Session
     professionals = body.assigned_professionals
 
     create_professionals(db, professionals, edited_social_case_service['id'],  user_id)
+
+@router.post("/mail/social-case")
+def send_social_case_mail(type: str, body: SocialCaseMail = None):
+    #Variables:
+    # type: Tipo de mensaje a enviar (CREATE, EDIT, ASIGN). <-- Param
+    # body: Data general que va en cada cuerpo del correo y a quién va dirigido en variable body.to <-- Body
+    to = ["jonathan.diaz@itprocesos.cl", "eduardo.molina@itprocesos.cl", "ruben.kern@itprocesos.cl", "ecarrizo@fundacioncchc.cl"]
+    # create message object instance
+    msg = MIMEMultipart('alternative')
+    # setup the parameters of the message
+    password = "u8m7&KNJ4"
+    msg['From'] = "fundacionsocialcchc@fundacioncchc.cl"
+    msg['To'] = ','.join(to)
+    html = ''
+    #Obtaining type of message
+    if(type == 'CREATE'):
+        msg['Subject'] = f"Se creó caso social"
+        html = f"""
+                <html>
+                    <head></head>
+                    <body>
+                        <p>Estimado(a)</p>\n
+                        <p>El día INGRESAR_FECHA, <strong>INGRESAR_NOMBRE_QUIÉN_CREA_CASO_SOCIAL</strong>, profesional de la Fundación Social C.Ch.C., 
+                        ha solicitado analizar autoderivación del caso de <strong>NOMBRE_QUIÉN_SE_ATENDIÓ</strong>, cédula de identidad N° RUT_QUIÉN_SE_ATENDIÓ, 
+                        trabajador de la obra NOMBRE_OBRA de la empresa NOMBRE_EMPRESA.</p>\n
+                        <p>El caso refiere lo siguiente:<p>\n
+                        <p>COMENTARIO_EN_CREACIÓN_CASO_SOCIAL</p>\n
+                        <p>De acuerdo a lo anterior se solicita:</p>\n
+                        <p>COMENTARIO_CIERRE</p>\n
+                        <div>Atentamente</div>
+                        <div>Equipo Fundación Social C.Ch.C</div>
+                    </body>
+                </html>
+                """
+    if(type == 'EDIT'):
+        msg['Subject'] = f"Se editó caso social"
+        html = f"""
+                <html>
+                    <head></head>
+                    <body>
+                        <p>Estimado(a)</p>\n
+                        <p>Equipo intervención caso N° NÚMERO_CASO</p>\n
+                        <br/>
+                        <p>El día INGRESAR_FECHA se ha modificado el programa de trabajo para el caso N° NÚMERO_CASO del trabajador:</p>\n
+                        <p>R.U.T. N° INGRESAR_RUT, INGRESAR_NOMBRE.</p>\n
+                        <p>Se agregaron las siguientes gestiones:</p>\n
+                        <table style="width:100%; text-align:'center'">
+                        <tr>
+                            <th style="border-bottom:1px solid black"><strong>Gestión</strong></th>
+                            <th style="border-bottom:1px solid black"><strong>Profesional</strong></th>
+                            <th style="border-bottom:1px solid black"><strong>Fecha</strong></th>
+                        </tr>
+                        <tr>
+                            <td style="border-bottom:1px solid black">TIPO_GESTIÓN</td>
+                            <td style="border-bottom:1px solid black">NOMBRE_PROFESIONAL</td>
+                            <td style="border-bottom:1px solid black">FECHA</td>
+                        </tr>
+                        </table>\n
+                        <br/>
+                        <div><strong>REFERENCIA:</strong></div>
+                        <div>CASO N°: NÚMERO_CASO</div>
+                        <div>FECHA: FECHA_CASO?</div>
+                        <div>ÁREA: AREA_CASO</div>
+                        <div>TEMA: TEMA_CASO</div>
+                        <div>DERIVADO POR: QUIÉN_DERIVA_CASO</div>
+                        <div>OFICINA: OFICINA_QUIÉN_DELEGA?</div>\n
+                        <br/>
+                        <div>Atentamente</div>
+                        <div>Equipo Fundación Social C.Ch.C</div>
+                    </body>
+                </html>
+                """
+    if(type == 'ASIGN'):
+        msg['Subject'] = f"Se asignó caso social"
+        html = f"""
+                <html>
+                    <head></head>
+                    <body>
+                        <p>Estimado(a)</p>\n
+                        <p>NOMBRE_DE_QUIÉN?</p>\n
+                        <br/>
+                        <p>El día INGRESAR_FECHA y tras revisar los antecedentes de la situación social derivada con el N° NÚMERO_CASO_SOCIAL, se ha 
+                        resuelto abordar esta por el equipo de intervención de casos sociales.</p>\n
+                        <p>En el análisis de la situación se observa que:</p>\n
+                        <p><strong>COMENTARIO_DERIVACIÓN</strong></p>\n
+                        <br/>
+                        <p>Por tanto, para atender este caso, se ha seleccionado el siguiente equipo profesional:</p>\n
+                        <ul>
+                            <li>Susana Muñoz Loyola</li>
+                            <li>Otra ejecutiva</li>
+                            <li>Susana Muñoz Loyola</li>
+                        </ul>\n
+                        <br/>
+                        <div>Atentamente</div>
+                        <div>Equipo Fundación Social C.Ch.C</div>
+                    </body>
+                </html>
+                """
+    part2 = MIMEText(html, 'html')  
+    msg.attach(part2)
+
+    # create server
+    server = smtplib.SMTP('smtp.gmail.com: 587')
+    server.starttls()
+    
+    # Login Credentials for sending the mail
+    server.login(msg['From'], password)
+
+    # send the message via the server.
+    server.sendmail(msg['From'], to, msg.as_string())
+
+    server.quit()
+    
+    print("successfully sent email to: ", msg['To'])

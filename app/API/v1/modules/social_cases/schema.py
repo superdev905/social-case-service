@@ -155,3 +155,32 @@ class SocialCaseDetails(SocialCaseItem):
     asistencia: str = Field(alias="observation")
     tema: TemaResponse
     closing: Optional[ClosingItem]
+
+class ProfesionalDerivated(BaseModel):
+    name: Optional[str]
+
+class NewInterventionProcess(BaseModel):
+    type: Optional[str]
+    profesionalName: Optional[str]
+    date: Optional[str]
+
+class SocialCaseMail(BaseModel):
+    to: Optional[List[str]]
+    cc: Optional[List[str]]
+    date: Optional[str]
+    createdBy: Optional[str]
+    attended: Optional[str]
+    attendedRut: Optional[str]
+    obra: Optional[str]
+    company: Optional[str]
+    createComment: Optional[str]
+    createCommentEnd: Optional[str]
+    socialCaseNumber: Optional[str]
+    dataTable: Optional[List[NewInterventionProcess]]
+    socialCaseCreatedAt: Optional[str]
+    areaName: Optional[str]
+    topicName: Optional[str]
+    derivatedBy: Optional[str]
+    officeDelegatedBy: Optional[str]
+    derivationComment: Optional[str]
+    profesionalDerivatedList: Optional[List[ProfesionalDerivated]]
