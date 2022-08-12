@@ -342,6 +342,9 @@ def send_social_case_mail(type: str, body: SocialCaseMail = None):
     msg['From'] = "fundacionsocialcchc@fundacioncchc.cl"
     msg['To'] = ','.join(to)
     html = ''
+    listOnMail = []
+    for user in body.profesionalDerivatedList:
+        listOnMail.append(f"<li>{user}</li>")
     #Obtaining type of message
     if(type == 'CREATE'):
         msg['Subject'] = f"Se creó caso social"
@@ -350,13 +353,13 @@ def send_social_case_mail(type: str, body: SocialCaseMail = None):
                     <head></head>
                     <body>
                         <p>Estimado(a)</p>\n
-                        <p>El día INGRESAR_FECHA, <strong>INGRESAR_NOMBRE_QUIÉN_CREA_CASO_SOCIAL</strong>, profesional de la Fundación Social C.Ch.C., 
-                        ha solicitado analizar autoderivación del caso de <strong>NOMBRE_QUIÉN_SE_ATENDIÓ</strong>, cédula de identidad N° RUT_QUIÉN_SE_ATENDIÓ, 
-                        trabajador de la obra NOMBRE_OBRA de la empresa NOMBRE_EMPRESA.</p>\n
+                        <p>El día {body.date}, <strong>{body.derivatedBy}</strong>, profesional de la Fundación Social C.Ch.C., 
+                        ha solicitado analizar {body.derivatedType} del caso de <strong>{body.attended}</strong>, cédula de identidad N° {body.attendedRut}, 
+                        trabajador de la obra {body.obra} de la empresa {body.company}.</p>\n
                         <p>El caso refiere lo siguiente:<p>\n
-                        <p>COMENTARIO_EN_CREACIÓN_CASO_SOCIAL</p>\n
+                        <p style="font-style: italic">"{body.createComment}"</p>\n
                         <p>De acuerdo a lo anterior se solicita:</p>\n
-                        <p>COMENTARIO_CIERRE</p>\n
+                        <p style="font-style: italic">"{body.createCommentEnd}"</p>\n
                         <div>Atentamente</div>
                         <div>Equipo Fundación Social C.Ch.C</div>
                     </body>
@@ -369,10 +372,10 @@ def send_social_case_mail(type: str, body: SocialCaseMail = None):
                     <head></head>
                     <body>
                         <p>Estimado(a)</p>\n
-                        <p>Equipo intervención caso N° NÚMERO_CASO</p>\n
+                        <p>Equipo intervención caso N° {body.socialCaseNumber}</p>\n
                         <br/>
-                        <p>El día INGRESAR_FECHA se ha modificado el programa de trabajo para el caso N° NÚMERO_CASO del trabajador:</p>\n
-                        <p>R.U.T. N° INGRESAR_RUT, INGRESAR_NOMBRE.</p>\n
+                        <p>El día {body.date} se ha modificado el programa de trabajo para el caso N° {body.socialCaseNumber} del trabajador:</p>\n
+                        <p>R.U.T. N° {body.attendedRut}, {body.attended}.</p>\n
                         <p>Se agregaron las siguientes gestiones:</p>\n
                         <table style="width:100%; text-align:'center'">
                         <tr>
@@ -381,18 +384,18 @@ def send_social_case_mail(type: str, body: SocialCaseMail = None):
                             <th style="border-bottom:1px solid black"><strong>Fecha</strong></th>
                         </tr>
                         <tr>
-                            <td style="border-bottom:1px solid black">TIPO_GESTIÓN</td>
-                            <td style="border-bottom:1px solid black">NOMBRE_PROFESIONAL</td>
-                            <td style="border-bottom:1px solid black">FECHA</td>
+                            <td style="border-bottom:1px solid black">{body.interventionType}</td>
+                            <td style="border-bottom:1px solid black">{body.interventionProfesionalName}</td>
+                            <td style="border-bottom:1px solid black">{body.interventionDate}</td>
                         </tr>
                         </table>\n
                         <br/>
                         <div><strong>REFERENCIA:</strong></div>
-                        <div>CASO N°: NÚMERO_CASO</div>
-                        <div>FECHA: FECHA_CASO?</div>
-                        <div>ÁREA: AREA_CASO</div>
-                        <div>TEMA: TEMA_CASO</div>
-                        <div>DERIVADO POR: QUIÉN_DERIVA_CASO</div>
+                        <div>CASO N°: {body.socialCaseNumber}</div>
+                        <div>FECHA: {body.socialCaseStartDate}</div>
+                        <div>ÁREA: {body.areaName}</div>
+                        <div>TEMA: {body.topicName}</div>
+                        <div>DERIVADO POR: {body.derivatedBy}</div>
                         <div>OFICINA: OFICINA_QUIÉN_DELEGA?</div>\n
                         <br/>
                         <div>Atentamente</div>
@@ -407,18 +410,16 @@ def send_social_case_mail(type: str, body: SocialCaseMail = None):
                     <head></head>
                     <body>
                         <p>Estimado(a)</p>\n
-                        <p>NOMBRE_DE_QUIÉN?</p>\n
+                        <p>{', '.join(body.profesionalDerivatedList)}</p>\n
                         <br/>
-                        <p>El día INGRESAR_FECHA y tras revisar los antecedentes de la situación social derivada con el N° NÚMERO_CASO_SOCIAL, se ha 
+                        <p>El día {body.date} y tras revisar los antecedentes de la situación social derivada con el N° {body.socialCaseNumber}, se ha 
                         resuelto abordar esta por el equipo de intervención de casos sociales.</p>\n
                         <p>En el análisis de la situación se observa que:</p>\n
-                        <p><strong>COMENTARIO_DERIVACIÓN</strong></p>\n
+                        <p><strong>{body.derivationComment}</strong></p>\n
                         <br/>
                         <p>Por tanto, para atender este caso, se ha seleccionado el siguiente equipo profesional:</p>\n
                         <ul>
-                            <li>Susana Muñoz Loyola</li>
-                            <li>Otra ejecutiva</li>
-                            <li>Susana Muñoz Loyola</li>
+                            {''.join(listOnMail)}
                         </ul>\n
                         <br/>
                         <div>Atentamente</div>

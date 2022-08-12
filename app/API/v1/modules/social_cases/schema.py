@@ -156,14 +156,6 @@ class SocialCaseDetails(SocialCaseItem):
     tema: TemaResponse
     closing: Optional[ClosingItem]
 
-class ProfesionalDerivated(BaseModel):
-    name: Optional[str]
-
-class NewInterventionProcess(BaseModel):
-    type: Optional[str]
-    profesionalName: Optional[str]
-    date: Optional[str]
-
 class SocialCaseMail(BaseModel):
     to: Optional[List[str]]
     cc: Optional[List[str]]
@@ -176,11 +168,15 @@ class SocialCaseMail(BaseModel):
     createComment: Optional[str]
     createCommentEnd: Optional[str]
     socialCaseNumber: Optional[str]
-    dataTable: Optional[List[NewInterventionProcess]]
+    socialCaseStartDate: Optional[str]
+    interventionType: Optional[str]
+    interventionProfesionalName: Optional[str]
+    interventionDate: Optional[str]
     socialCaseCreatedAt: Optional[str]
     areaName: Optional[str]
     topicName: Optional[str]
     derivatedBy: Optional[str]
     officeDelegatedBy: Optional[str]
     derivationComment: Optional[str]
-    profesionalDerivatedList: Optional[List[ProfesionalDerivated]]
+    profesionalDerivatedList: Optional[List[str]]
+    derivatedType: Optional[str]
