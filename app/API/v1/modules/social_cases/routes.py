@@ -334,7 +334,8 @@ def send_social_case_mail(type: str, body: SocialCaseMail = None):
     #Variables:
     # type: Tipo de mensaje a enviar (CREATE, EDIT, ASIGN). <-- Param
     # body: Data general que va en cada cuerpo del correo y a quién va dirigido en variable body.to <-- Body
-    to = ["jonathan.diaz@itprocesos.cl", "eduardo.molina@itprocesos.cl", "ruben.kern@itprocesos.cl", "ecarrizo@fundacioncchc.cl"]
+    # "ruben.kern@itprocesos.cl", "ecarrizo@fundacioncchc.cl" <-- Agregar a arreglo para pruebas de mañana.
+    to = ["jonathan.diaz@itprocesos.cl", "eduardo.molina@itprocesos.cl"]
     # create message object instance
     msg = MIMEMultipart('alternative')
     # setup the parameters of the message
