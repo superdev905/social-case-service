@@ -396,7 +396,7 @@ def send_social_case_mail(type: str, body: SocialCaseMail = None):
                         <div>ÁREA: {body.areaName}</div>
                         <div>TEMA: {body.topicName}</div>
                         <div>DERIVADO POR: {body.derivatedBy}</div>
-                        <div>OFICINA: {body.officeDelegatedBy}?</div>\n
+                        <div>OFICINA: {body.officeDelegatedBy}</div>\n
                         <br/>
                         <div>Atentamente</div>
                         <div>Equipo Fundación Social C.Ch.C</div>
