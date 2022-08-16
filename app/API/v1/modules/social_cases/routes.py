@@ -334,17 +334,18 @@ def send_social_case_mail(type: str, body: SocialCaseMail = None):
     #Variables:
     # type: Tipo de mensaje a enviar (CREATE, EDIT, ASIGN). <-- Param
     # body: Data general que va en cada cuerpo del correo y a quién va dirigido en variable body.to <-- Body
-    to = ["jonathan.diaz@itprocesos.cl", "eduardo.molina@itprocesos.cl", "ruben.kern@itprocesos.cl", "ecarrizo@fundacioncchc.cl"]
+    # to = ["jonathan.diaz@itprocesos.cl", "eduardo.molina@itprocesos.cl", "ruben.kern@itprocesos.cl", "ecarrizo@fundacioncchc.cl"]
     # create message object instance
     msg = MIMEMultipart('alternative')
     # setup the parameters of the message
     password = "u8m7&KNJ4"
     msg['From'] = "fundacionsocialcchc@fundacioncchc.cl"
-    msg['To'] = ','.join(to)
+    msg['To'] = ','.join(body.to)
     html = ''
     listOnMail = []
-    for user in body.profesionalDerivatedList:
-        listOnMail.append(f"<li>{user}</li>")
+    if(len(body.profesionalDerivatedList) > 0):
+        for user in body.profesionalDerivatedList:
+            listOnMail.append(f"<li>{user}</li>")
     #Obtaining type of message
     if(type == 'CREATE'):
         msg['Subject'] = f"Se creó caso social"
@@ -396,7 +397,7 @@ def send_social_case_mail(type: str, body: SocialCaseMail = None):
                         <div>ÁREA: {body.areaName}</div>
                         <div>TEMA: {body.topicName}</div>
                         <div>DERIVADO POR: {body.derivatedBy}</div>
-                        <div>OFICINA: OFICINA_QUIÉN_DELEGA?</div>\n
+                        <div>OFICINA: {body.officeDelegatedBy}?</div>\n
                         <br/>
                         <div>Atentamente</div>
                         <div>Equipo Fundación Social C.Ch.C</div>
@@ -438,7 +439,7 @@ def send_social_case_mail(type: str, body: SocialCaseMail = None):
     server.login(msg['From'], password)
 
     # send the message via the server.
-    server.sendmail(msg['From'], to, msg.as_string())
+    server.sendmail(msg['From'], body.to, msg.as_string())
 
     server.quit()
     
