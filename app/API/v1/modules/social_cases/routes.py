@@ -54,7 +54,8 @@ def get_all(business_id: int = Query(None, alias="businessId"),
     if(business_id):
         filters.append(SocialCase.business_id == business_id)
     if(asistance_id):
-        filters.append(SocialCase.assistance_id == asistance_id)
+        filters.append(SocialCase.professional_id == asistance_id)
+        extraFilters.append(SocialCase.assistance_derivation_id.contains([asistance_id]))
     if(professional_id):
         filters.append(SocialCase.professional_id == professional_id)
         extraFilters.append(SocialCase.assistance_derivation_id.contains([professional_id]))
