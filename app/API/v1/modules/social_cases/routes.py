@@ -1,3 +1,4 @@
+from ast import alias
 from datetime import datetime
 from os import getegid
 from typing import List, Optional
@@ -35,7 +36,7 @@ def get_all(business_id: int = Query(None, alias="businessId"),
             end_date: Optional[datetime] = Query(None, alias="endDate"),
             zone: str = None,
             state: str = None,
-            asistanceId: int = None,
+            asistance_id: int = Query(None, alias="asistanceId"),
             professional_id: int = Query(None, alias="professionalId"),
             delegation: str = None,
             area_id: int = Query(None, alias="areaId"),
@@ -54,8 +55,8 @@ def get_all(business_id: int = Query(None, alias="businessId"),
     if(business_id):
         filters.append(SocialCase.business_id == business_id)
     if(asistance_id):
-        filters.append(SocialCase.professional_id == asistanceId)
-        extraFilters.append(SocialCase.assistance_derivation_id.contains([asistanceId]))
+        filters.append(SocialCase.professional_id == asistance_id)
+        extraFilters.append(SocialCase.assistance_derivation_id.contains([asistance_id]))
     if(professional_id):
         filters.append(SocialCase.professional_id == professional_id)
         extraFilters.append(SocialCase.assistance_derivation_id.contains([professional_id]))
