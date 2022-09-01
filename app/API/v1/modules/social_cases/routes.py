@@ -36,6 +36,7 @@ def get_all(business_id: int = Query(None, alias="businessId"),
             end_date: Optional[datetime] = Query(None, alias="endDate"),
             zone: str = None,
             state: str = None,
+            assistance_id: int = Query(None, alias="assistanceId"),
             professional_id: int = Query(None, alias="professionalId"),
             delegation: str = None,
             area_id: int = Query(None, alias="areaId"),
@@ -56,6 +57,9 @@ def get_all(business_id: int = Query(None, alias="businessId"),
     if(professional_id):
         filters.append(SocialCase.professional_id == professional_id)
         extraFilters.append(SocialCase.assistance_derivation_id.contains([professional_id]))
+    if(assistance_id):
+        filters.append(SocialCase.professional_id == assistance_id)
+        extraFilters.append(SocialCase.assistance_derivation_id.contains([assistance_id]))
     if(area_id):
         filters.append(SocialCase.area_id == area_id)
     if (start_date):
